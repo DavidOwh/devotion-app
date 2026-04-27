@@ -15,7 +15,7 @@ app.post("/api/verse", async (req, res) => {
   if (!apiKey) return res.status(500).json({ error: "No API key" });
   console.log("[verse] key:", apiKey.substring(0, 8));
   try {
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
     const r = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
