@@ -32,12 +32,8 @@ app.post("/api/verse", async (req, res) => {
     const lines_zh = [], lines_en = [];
     for (let v = v1; v <= v2; v++) {
       const [r1, r2] = await Promise.all([
-        fetch(`https://bolls.life/get-verse/CNV/${bookCode}/${ch}/${v}/`),
+        fetch(`https://bolls.life/get-verse/CUV/${bookCode}/${ch}/${v}/`),
         fetch(`https://bolls.life/get-verse/ESV/${bookCode}/${ch}/${v}/`)
       ]);
       if (r1.ok) { const d = await r1.json(); if(d.text) lines_zh.push(`${zhName}${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`); }
       if (r2.ok) { const d = await r2.json(); if(d.text) lines_en.push(`${zhName}${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`); }
-    }
-    if (!lines_zh.length && !lines_en.length) return res.status(404).json({ error: "not_found" });
-    console.log("[verse] SUCCESS");
-    res.json({ zh: lines_zh.join('\n'), en: lines_en.join('\n') }
