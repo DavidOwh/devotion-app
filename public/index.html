@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>✝️ 三点灵修分享</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC','Segoe UI',sans-serif;background:#f4f4ef;min-height:100vh;display:flex;justify-content:center;padding-bottom:40px}
+.app{width:100%;max-width:430px}
+.hdr{text-align:center;padding:24px 20px 18px;background:#fff;border-bottom:1px solid #e8e8e2;margin-bottom:14px;position:sticky;top:0;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.hdr h1{font-size:20px;font-weight:700;color:#111;letter-spacing:0.3px}
+.hdr p{font-size:12px;color:#aaa;margin-top:3px}
+.seg{display:flex;margin:0 14px 13px;border:1.5px solid #0F6E56;border-radius:11px;overflow:hidden}
+.seg button{flex:1;padding:11px 8px;font-size:14px;font-weight:600;border:none;cursor:pointer;background:transparent;color:#0F6E56;font-family:inherit;transition:all .18s}
+.seg button.on{background:#0F6E56;color:#fff}
+.tabs{display:flex;gap:5px;margin:0 14px 13px}
+.tabs button{flex:1;padding:10px 4px;font-size:13px;font-weight:500;border:1px solid #ddd;border-radius:10px;cursor:pointer;background:#fff;color:#888;font-family:inherit;transition:all .18s}
+.tabs button.on{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.pad{padding:0 14px}
+.card{background:#fff;border:1px solid #e8e8e2;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.lbl{font-size:10px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:9px}
+.vrow{display:flex;gap:7px;margin-bottom:8px;align-items:stretch}
+.vrow input{flex:1}
+.mic-input{width:42px;height:auto;border-radius:10px;border:1.5px solid #0F6E56;background:#e8f5f0;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.mic-input:hover{background:#c5e8dc}
+.mic-input.rec{background:#fdecea;border-color:#e53935;animation:pulse .9s infinite}
+.fbtn{padding:10px 16px;border-radius:10px;border:1.5px solid #0F6E56;font-size:13px;cursor:pointer;background:#e8f5f0;color:#0F6E56;font-weight:700;white-space:nowrap;font-family:inherit;transition:all .15s;flex-shrink:0}
+.fbtn:hover{background:#c5e8dc}
+.fbtn:disabled{opacity:0.45;cursor:not-allowed}
+input[type=text]{border:1.5px solid #e0e0d8;border-radius:10px;padding:10px 12px;font-size:14px;color:#111;background:#fafaf7;outline:none;width:100%;font-family:inherit;transition:border-color .15s}
+input[type=text]:focus{border-color:#0F6E56;background:#fff}
+input[type=text]::placeholder{color:#ccc}
+.verse-block{border-radius:10px;padding:10px 13px;margin-top:6px;line-height:1.85;font-size:13px}
+.verse-block.zh{background:#e8f5f0;border-left:3px solid #0F6E56;color:#0a4a35;font-style:italic}
+.verse-block.en{background:#e3f0fb;border-left:3px solid #3a8fd8;color:#0a3060;font-style:italic}
+.verse-block.miss{background:#fff8e6;border-left:3px solid #f0b429;color:#7a5000;font-style:normal;font-size:12px}
+.verse-block.err{background:#fdecea;border-left:3px solid #e53935;color:#8b1a1a;font-style:normal;font-size:12px}
+.spin-row{display:flex;align-items:center;gap:7px;font-size:12px;color:#0F6E56;padding:6px 0}
+.spin{width:14px;height:14px;border:2px solid #c5e8dc;border-top-color:#0F6E56;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hint{font-size:11px;color:#ccc;margin-top:6px;line-height:1.5}
+.qtitle{font-size:14px;font-weight:600;color:#111;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.qsub{font-size:12px;color:#aaa;margin-bottom:9px;line-height:1.5}
+.qnum{width:24px;height:24px;border-radius:50%;background:#e8f5f0;color:#0F6E56;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+textarea{width:100%;border:1.5px solid #e0e0d8;border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;color:#111;background:#fafaf7;resize:none;outline:none;line-height:1.6;transition:border-color .15s}
+textarea:focus{border-color:#0F6E56;background:#fff}
+textarea::placeholder{color:#ccc}
+.pray{background:#fff;border:1.5px solid #a8dcc8;border-radius:14px;padding:14px;margin-bottom:12px}
+.plbl{font-size:12px;color:#0F6E56;font-weight:600;margin-bottom:5px}
+.pitem{margin-bottom:10px}
+.pitem:last-child{margin-bottom:0}
+.prev{background:#fafaf7;border:1px solid #e0e0d8;border-radius:10px;padding:13px;font-size:13px;color:#333;line-height:1.95;white-space:pre-wrap;max-height:260px;overflow-y:auto;margin-top:11px;font-family:inherit}
+.brow{display:flex;gap:9px;margin-top:13px}
+.btn{flex:1;padding:13px;border-radius:11px;border:1px solid #ddd;font-size:14px;font-weight:600;cursor:pointer;background:#fff;color:#444;font-family:inherit;transition:all .15s}
+.btn:hover{background:#f5f5f0}
+.btn.go{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.btn.cp{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.toast{font-size:12px;color:#0F6E56;font-weight:500;text-align:center;margin-top:9px;opacity:0;transition:opacity .3s;height:16px}
+.toast.show{opacity:1}
+.guide{background:#fafaf7;border:1px solid #e0e0d8;border-radius:11px;padding:13px 15px;font-size:13px;color:#666;line-height:2;margin-bottom:13px}
+.guide strong{display:block;margin-bottom:4px;color:#333;font-size:13px;font-weight:600}
+.vstep{background:#fff;border:1px solid #e8e8e2;border-radius:14px;padding:14px;margin-bottom:10px}
+.vstep-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.vstep-title{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#111}
+.vstep-n{width:26px;height:26px;border-radius:50%;background:#e8f5f0;color:#0F6E56;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mics{width:42px;height:42px;border-radius:50%;border:1.5px solid #0F6E56;background:#e8f5f0;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.mics:hover{background:#c5e8dc}
+.mics.rec{background:#fdecea;border-color:#e53935;animation:pulse .9s infinite}
+.mics.done{background:#e8f5f0;border-color:#1D9E75}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.vstep-st{font-size:11px;color:#aaa;margin-top:4px}
+.vstep-st.ok{color:#0F6E56;font-weight:500}
+.vstep-field{border:1.5px solid #e0e0d8;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:#111;background:#fafaf7;min-height:52px;outline:none;width:100%;resize:none;line-height:1.55;margin-top:8px;display:block}
+.vstep-field:focus{border-color:#0F6E56;background:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <h1>✝️ 三点灵修分享</h1>
+    <p>Three-Point Devotion Sharing</p>
+  </div>
+
+  <div class="seg">
+    <button class="on" onclick="setVer('zh')" id="vbzh">中文版</button>
+    <button onclick="setVer('en')" id="vben">English</button>
+  </div>
+
+  <!-- 中文版 -->
+  <div id="pzh">
+    <div class="tabs">
+      <button class="on" onclick="setTabZh('type')" id="zht-type">✏️ 打字</button>
+      <button onclick="setTabZh('voice')" id="zht-voice">🎙️ 语音</button>
+    </div>
+
+    <div id="zh-type" class="pad">
+      <div class="card">
+        <div class="lbl">今日经文 / 双语显示</div>
+        <div class="vrow">
+          <input type="text" id="zh-ref" placeholder="例：约 3:16 / 诗 23:1-6">
+          <button class="mic-input" id="zh-refmic" onclick="toggleRefMic('zh')" title="语音输入">🎙️</button>
+          <button class="fbtn" id="zh-fbtn" onclick="findVerse('zh')">查找</button>
+        </div>
+        <div id="zh-va"></div>
+        <div class="hint">支持全本圣经 · 中文和合本 + 英文 ESV · 可点击 🎙️ 语音输入</div>
+      </div>
+
+      <div class="card">
+        <div class="qtitle"><span class="qnum">1</span>经文在说什么？</div>
+        <div class="qsub">用简单的话总结经文内容</div>
+        <textarea id="zh-q1" rows="3" placeholder="这段经文在讲..." oninput="bp('zh')"></textarea>
+      </div>
+      <div class="card">
+        <div class="qtitle"><span class="qnum">2</span>经文对我说什么？</div>
+        <div class="qsub">这句话提醒我什么？安慰我什么？</div>
+        <textarea id="zh-q2" rows="3" placeholder="这段话让我想到..." oninput="bp('zh')"></textarea>
+      </div>
+      <div class="card">
+        <div class="qtitle"><span class="qnum">3</span>经文要我做什么？</div>
+        <div class="qsub">我可以有什么具体行动回应神？</div>
+        <textarea id="zh-q3" rows="3" placeholder="今天我要..." oninput="bp('zh')"></textarea>
+      </div>
+
+      <div class="pray">
+        <div class="lbl" style="color:#0F6E56">🙏 灵修后祷告</div>
+        <div class="pitem"><div class="plbl">感谢主，让我明白...</div><textarea id="zh-p1" rows="2" placeholder="感谢祢..." oninput="bp('zh')"></textarea></div>
+        <div class="pitem"><div class="plbl">赞美主，祢提醒我...</div><textarea id="zh-p2" rows="2" placeholder="赞美祢..." oninput="bp('zh')"></textarea></div>
+        <div class="pitem"><div class="plbl">恳求主，帮助我去...</div><textarea id="zh-p3" rows="2" placeholder="求祢帮助我..." oninput="bp('zh')"></textarea></div>
+      </div>
+
+      <div class="card">
+        <div class="lbl">预览分享内容</div>
+        <div class="prev" id="zh-prev">请填写上方心得，这里会自动生成分享内容。</div>
+        <div class="brow">
+          <button class="btn" onclick="clr('zh')">清除</button>
+          <button class="btn go" id="zh-cp" onclick="doCopy('zh')">复制 ↗</button>
+        </div>
+        <div class="toast" id="zh-toast">✅ 已复制！请粘贴到 WhatsApp 或 Telegram</div>
+      </div>
+    </div>
+
+    <div id="zh-voice" style="display:none" class="pad">
+      <div class="card">
+        <div class="lbl">今日经文 / 双语显示</div>
+        <div class="vrow">
+          <input type="text" id="zh-ref-v" placeholder="例：约 3:16 / 诗 23:1-6">
+          <button class="mic-input" id="zh-refmic-v" onclick="toggleRefMicV('zh')" title="语音输入">🎙️</button>
+          <button class="fbtn" id="zh-fbtn-v" onclick="findVerseV('zh')">查找</button>
+        </div>
+        <div id="zh-va-v"></div>
+      </div>
+      <div class="guide">
+        <strong>🎙️ 语音灵修 — 每点独立录音</strong>
+        每一点有自己的麦克风。<br>
+        点 🎙️ 开始说话 → 说完点 ⏹️ 停止 → 自动变文字 → 复制分享
+      </div>
+      <div id="zh-vsteps"></div>
+      <div class="brow" style="margin-top:4px">
+        <button class="btn go" onclick="copyVoice('zh')">复制全部分享内容 ↗</button>
+      </div>
+      <div class="toast" id="zh-vtoast" style="height:auto;padding:5px 0">✅ 已复制！请粘贴到 WhatsApp 或 Telegram</div>
+    </div>
+  </div>
+
+  <!-- English -->
+  <div id="pen" style="display:none">
+    <div class="tabs">
+      <button class="on" onclick="setTabEn('type')" id="ent-type">✏️ Type</button>
+      <button onclick="setTabEn('voice')" id="ent-voice">🎙️ Voice</button>
+    </div>
+
+    <div id="en-type" class="pad">
+      <div class="card">
+        <div class="lbl">Today's Verse / Bilingual</div>
+        <div class="vrow">
+          <input type="text" id="en-ref" placeholder="e.g. John 3:16 / Ps 23:1-6">
+          <button class="mic-input" id="en-refmic" onclick="toggleRefMic('en')" title="Voice input">🎙️</button>
+          <button class="fbtn" id="en-fbtn" onclick="findVerse('en')">Find</button>
+        </div>
+        <div id="en-va"></div>
+        <div class="hint">Full Bible · CUV + ESV · Tap 🎙️ to use voice</div>
+      </div>
+
+      <div class="card">
+        <div class="qtitle"><span class="qnum">1</span>What does it say?</div>
+        <div class="qsub">Summarise the passage in simple words</div>
+        <textarea id="en-q1" rows="3" placeholder="This passage is about..." oninput="bp('en')"></textarea>
+      </div>
+      <div class="card">
+        <div class="qtitle"><span class="qnum">2</span>What does it say to me?</div>
+        <div class="qsub">What does it remind or comfort me with?</div>
+        <textarea id="en-q2" rows="3" placeholder="This verse reminds me..." oninput="bp('en')"></textarea>
+      </div>
+      <div class="card">
+        <div class="qtitle"><span class="qnum">3</span>What does it call me to do?</div>
+        <div class="qsub">What concrete action can I take to respond to God?</div>
+        <textarea id="en-q3" rows="3" placeholder="Today I will..." oninput="bp('en')"></textarea>
+      </div>
+
+      <div class="pray">
+        <div class="lbl" style="color:#0F6E56">🙏 Prayer Response</div>
+        <div class="pitem"><div class="plbl">Thank You Lord, for showing me...</div><textarea id="en-p1" rows="2" placeholder="Thank You Lord..." oninput="bp('en')"></textarea></div>
+        <div class="pitem"><div class="plbl">I praise You, for You reminded me...</div><textarea id="en-p2" rows="2" placeholder="I praise You..." oninput="bp('en')"></textarea></div>
+        <div class="pitem"><div class="plbl">Lord I ask You to help me...</div><textarea id="en-p3" rows="2" placeholder="Please help me..." oninput="bp('en')"></textarea></div>
+      </div>
+
+      <div class="card">
+        <div class="lbl">Preview</div>
+        <div class="prev" id="en-prev">Fill in your devotion above and the sharing text will appear here.</div>
+        <div class="brow">
+          <button class="btn" onclick="clr('en')">Clear</button>
+          <button class="btn go" id="en-cp" onclick="doCopy('en')">Copy ↗</button>
+        </div>
+        <div class="toast" id="en-toast">✅ Copied! Paste into WhatsApp or Telegram</div>
+      </div>
+    </div>
+
+    <div id="en-voice" style="display:none" class="pad">
+      <div class="card">
+        <div class="lbl">Today's Verse / Bilingual</div>
+        <div class="vrow">
+          <input type="text" id="en-ref-v" placeholder="e.g. John 3:16 / Ps 23:1-6">
+          <button class="mic-input" id="en-refmic-v" onclick="toggleRefMicV('en')" title="Voice input">🎙️</button>
+          <button class="fbtn" id="en-fbtn-v" onclick="findVerseV('en')">Find</button>
+        </div>
+        <div id="en-va-v"></div>
+      </div>
+      <div class="guide">
+        <strong>🎙️ Voice devotion — one mic per point</strong>
+        Each point has its own mic.<br>
+        Tap 🎙️ to speak → tap ⏹️ to stop → auto-text → copy
+      </div>
+      <div id="en-vsteps"></div>
+      <div class="brow" style="margin-top:4px">
+        <button class="btn go" onclick="copyVoice('en')">Copy all sharing text ↗</button>
+      </div>
+      <div class="toast" id="en-vtoast" style="height:auto;padding:5px 0">✅ Copied! Paste into WhatsApp or Telegram</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const VC={zh:'',en:''};
+const MS={};
+const REF_MIC={zh:{rec:false,obj:null},en:{rec:false,obj:null}};
+const REF_MIC_V={zh:{rec:false,obj:null},en:{rec:false,obj:null}};
+
+// ── REFERENCE MIC (for verse input) ──────────────────────
+function toggleRefMic(lang){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert(lang==='zh'?'请使用手机 Chrome 或 Safari 浏览器。':'Please use Chrome or Safari.');return;
+  }
+  const m=REF_MIC[lang];
+  if(m.rec)stopRefMic(lang);else startRefMic(lang);
+}
+function startRefMic(lang){
+  const m=REF_MIC[lang];
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const r=new SR();
+  r.lang=lang==='zh'?'zh-CN':'en-SG';
+  r.continuous=false;r.interimResults=true;
+  r.onresult=e=>{
+    let t='';
+    for(let i=0;i<e.results.length;i++){t+=e.results[i][0].transcript;}
+    document.getElementById(lang+'-ref').value=t;
+  };
+  r.onend=()=>{stopRefMic(lang);};
+  r.start();
+  m.obj=r;m.rec=true;
+  document.getElementById(lang+'-refmic').className='mic-input rec';
+  document.getElementById(lang+'-refmic').textContent='⏹️';
+}
+function stopRefMic(lang){
+  const m=REF_MIC[lang];
+  if(m.obj)try{m.obj.stop();}catch(e){}
+  m.rec=false;
+  document.getElementById(lang+'-refmic').className='mic-input';
+  document.getElementById(lang+'-refmic').textContent='🎙️';
+}
+
+// Voice tab version
+function toggleRefMicV(lang){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert(lang==='zh'?'请使用手机 Chrome 或 Safari 浏览器。':'Please use Chrome or Safari.');return;
+  }
+  const m=REF_MIC_V[lang];
+  if(m.rec)stopRefMicV(lang);else startRefMicV(lang);
+}
+function startRefMicV(lang){
+  const m=REF_MIC_V[lang];
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const r=new SR();
+  r.lang=lang==='zh'?'zh-CN':'en-SG';
+  r.continuous=false;r.interimResults=true;
+  r.onresult=e=>{
+    let t='';
+    for(let i=0;i<e.results.length;i++){t+=e.results[i][0].transcript;}
+    document.getElementById(lang+'-ref-v').value=t;
+  };
+  r.onend=()=>{stopRefMicV(lang);};
+  r.start();
+  m.obj=r;m.rec=true;
+  document.getElementById(lang+'-refmic-v').className='mic-input rec';
+  document.getElementById(lang+'-refmic-v').textContent='⏹️';
+}
+function stopRefMicV(lang){
+  const m=REF_MIC_V[lang];
+  if(m.obj)try{m.obj.stop();}catch(e){}
+  m.rec=false;
+  document.getElementById(lang+'-refmic-v').className='mic-input';
+  document.getElementById(lang+'-refmic-v').textContent='🎙️';
+}
+
+// ── VERSE LOOKUP (uses backend) ───────────────────────────
+async function findVerse(lang){
+  await doFindVerse(lang,'-ref','-va','-fbtn');
+}
+async function findVerseV(lang){
+  await doFindVerse(lang,'-ref-v','-va-v','-fbtn-v');
+}
+
+async function doFindVerse(lang,refSuffix,vaSuffix,btnSuffix){
+  const raw=document.getElementById(lang+refSuffix).value.trim();
+  const area=document.getElementById(lang+vaSuffix);
+  const btn=document.getElementById(lang+btnSuffix);
+  VC[lang]='';
+  if(!raw){area.innerHTML='';bp(lang);return;}
+
+  btn.disabled=true;
+  btn.textContent=lang==='zh'?'查找中...':'Finding...';
+  area.innerHTML='<div class="spin-row"><span class="spin"></span>'+(lang==='zh'?'正在查找双语经文...':'Looking up bilingual verse...')+'</div>';
+
+  try{
+    const resp=await fetch('/api/verse',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({reference:raw})
+    });
+    if(resp.status===404){
+      area.innerHTML='<div class="verse-block miss">⚠️ '+(lang==='zh'?'找不到此经文，请检查书卷名和章节。':'Verse not found.')+'</div>';
+      return;
+    }
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error);
+    const zh=data.zh||'',en=data.en||'';
+    VC[lang]=zh+(en?'\n'+en:'');
+    let html='';
+    if(zh)html+='<div class="verse-block zh">'+zh.replace(/\n/g,'<br>')+'</div>';
+    if(en)html+='<div class="verse-block en" style="margin-top:6px">'+en.replace(/\n/g,'<br>')+'</div>';
+    area.innerHTML=html||'<div class="verse-block miss">No text returned</div>';
+    // Sync ref between tabs
+    if(refSuffix==='-ref-v')document.getElementById(lang+'-ref').value=raw;
+    else document.getElementById(lang+'-ref-v').value=raw;
+    bp(lang);
+  }catch(err){
+    area.innerHTML='<div class="verse-block err">❌ '+(lang==='zh'?'查找失败，请稍后再试。':'Lookup failed.')+'</div>';
+  }
+  btn.disabled=false;
+  btn.textContent=lang==='zh'?'查找':'Find';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────
+function setVer(v){
+  document.getElementById('pzh').style.display=v==='zh'?'block':'none';
+  document.getElementById('pen').style.display=v==='en'?'block':'none';
+  document.getElementById('vbzh').classList.toggle('on',v==='zh');
+  document.getElementById('vben').classList.toggle('on',v==='en');
+}
+function setTabZh(t){
+  document.getElementById('zh-type').style.display=t==='type'?'block':'none';
+  document.getElementById('zh-voice').style.display=t==='voice'?'block':'none';
+  document.getElementById('zht-type').classList.toggle('on',t==='type');
+  document.getElementById('zht-voice').classList.toggle('on',t==='voice');
+  if(t==='voice')buildSteps('zh');
+}
+function setTabEn(t){
+  document.getElementById('en-type').style.display=t==='type'?'block':'none';
+  document.getElementById('en-voice').style.display=t==='voice'?'block':'none';
+  document.getElementById('ent-type').classList.toggle('on',t==='type');
+  document.getElementById('ent-voice').classList.toggle('on',t==='voice');
+  if(t==='voice')buildSteps('en');
+}
+function getDate(lang){
+  const d=new Date();
+  if(lang==='zh')return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  return d.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'});
+}
+
+function bp(lang){
+  const g=id=>document.getElementById(lang+'-'+id).value.trim();
+  const ref=document.getElementById(lang+'-ref').value.trim();
+  const q1=g('q1'),q2=g('q2'),q3=g('q3'),p1=g('p1'),p2=g('p2'),p3=g('p3');
+  const el=document.getElementById(lang+'-prev');
+  if(!q1&&!q2&&!q3){
+    el.textContent=lang==='zh'?'请填写上方心得，这里会自动生成分享内容。':'Fill in your devotion above and the sharing text will appear here.';
+    return;
+  }
+  let out='';
+  if(lang==='zh'){
+    out='✝️ 三点灵修分享\n'+getDate('zh')+'\n';
+    if(ref){out+='\n📖 '+ref+'\n';if(VC.zh)out+=VC.zh+'\n';}
+    out+='\n📌 1. 经文在说什么？\n'+(q1||'（未填写）');
+    out+='\n\n💬 2. 经文对我说什么？\n'+(q2||'（未填写）');
+    out+='\n\n🙌 3. 经文要我做什么？\n'+(q3||'（未填写）');
+    if(p1||p2||p3){out+='\n\n🙏 灵修后祷告';if(p1)out+='\n感谢主，让我明白：'+p1;if(p2)out+='\n赞美主，祢提醒我：'+p2;if(p3)out+='\n恳求主，帮助我去：'+p3;out+='\n奉主耶稣的名祷告，阿们。';}
+  }else{
+    out='✝️ Three-Point Devotion Sharing\n'+getDate('en')+'\n';
+    if(ref){out+='\n📖 '+ref+'\n';if(VC.en)out+=VC.en+'\n';}
+    out+='\n📌 1. What does it say?\n'+(q1||'(not filled)');
+    out+='\n\n💬 2. What does it say to me?\n'+(q2||'(not filled)');
+    out+='\n\n🙌 3. What does it call me to do?\n'+(q3||'(not filled)');
+    if(p1||p2||p3){out+='\n\n🙏 Prayer Response';if(p1)out+='\nThank You Lord, for showing me: '+p1;if(p2)out+='\nI praise You, for You reminded me: '+p2;if(p3)out+='\nLord I ask You to help me: '+p3;out+='\nIn Jesus\'s name, Amen.';}
+  }
+  el.textContent=out;
+}
+
+function doCopy(lang){
+  const text=document.getElementById(lang+'-prev').textContent;
+  if(text.startsWith(lang==='zh'?'请填写':'Fill in')){alert(lang==='zh'?'请先填写灵修心得。':'Please fill in your devotion first.');return;}
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById(lang+'-cp');
+    const toast=document.getElementById(lang+'-toast');
+    btn.textContent=lang==='zh'?'已复制！':'Copied!';btn.className='btn cp';
+    toast.classList.add('show');
+    setTimeout(()=>{btn.textContent=lang==='zh'?'复制 ↗':'Copy ↗';btn.className='btn go';toast.classList.remove('show');},2800);
+  }).catch(()=>alert(lang==='zh'?'已复制！':'Copied!'));
+}
+function clr(lang){
+  ['ref','q1','q2','q3','p1','p2','p3'].forEach(k=>{const el=document.getElementById(lang+'-'+k);if(el)el.value='';});
+  VC[lang]='';
+  document.getElementById(lang+'-va').innerHTML='';
+  bp(lang);
+}
+
+// ── VOICE STEPS ───────────────────────────────────────────
+const SD={
+  zh:[
+    {n:'1',title:'经文在说什么？',hint:'用简单的话总结经文内容',ph:'这段经文在讲...'},
+    {n:'2',title:'经文对我说什么？',hint:'这句话提醒我什么？安慰我什么？',ph:'这段话让我想到...'},
+    {n:'3',title:'经文要我做什么？',hint:'我可以有什么具体行动回应神？',ph:'今天我要...'},
+    {n:'🙏',title:'感谢主，让我明白...',hint:'灵修后祷告 — 感谢',ph:'感谢祢...'},
+    {n:'🙏',title:'赞美主，祢提醒我...',hint:'灵修后祷告 — 赞美',ph:'赞美祢...'},
+    {n:'🙏',title:'恳求主，帮助我去...',hint:'灵修后祷告 — 恳求',ph:'求祢帮助我...'},
+  ],
+  en:[
+    {n:'1',title:'What does it say?',hint:'Summarise the passage',ph:'This passage is about...'},
+    {n:'2',title:'What does it say to me?',hint:'What does it remind or comfort me with?',ph:'This verse reminds me...'},
+    {n:'3',title:'What does it call me to do?',hint:'What concrete action can I take?',ph:'Today I will...'},
+    {n:'🙏',title:'Thank You Lord, for showing me...',hint:'Prayer — thanksgiving',ph:'Thank You Lord...'},
+    {n:'🙏',title:'I praise You, for You reminded me...',hint:'Prayer — praise',ph:'I praise You...'},
+    {n:'🙏',title:'Lord I ask You to help me...',hint:'Prayer — petition',ph:'Please help me...'},
+  ]
+};
+
+function buildSteps(lang){
+  const wrap=document.getElementById(lang+'-vsteps');
+  if(wrap.children.length>0)return;
+  wrap.innerHTML='';
+  SD[lang].forEach((s,i)=>{
+    const sid='vs'+lang+i;
+    MS[sid]={rec:false,obj:null,text:''};
+    const isEmoji=isNaN(parseInt(s.n));
+    const nEl=isEmoji?'<span style="font-size:15px">'+s.n+'</span>':'<div class="vstep-n">'+s.n+'</div>';
+    const d=document.createElement('div');
+    d.className='vstep';
+    d.innerHTML=`<div class="vstep-hdr"><div class="vstep-title">${nEl}<span>${s.title}</span></div><button class="mics" id="mb${sid}" onclick="toggleMic('${sid}','${lang}')">🎙️</button></div><div class="vstep-st" id="st${sid}">${s.hint}</div><textarea class="vstep-field" id="vf${sid}" rows="2" placeholder="${s.ph}"></textarea>`;
+    wrap.appendChild(d);
+  });
+}
+
+function toggleMic(sid,lang){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert(lang==='zh'?'请使用手机 Chrome 或 Safari 浏览器。':'Please use Chrome or Safari.');return;
+  }
+  if(MS[sid].rec)stopMic(sid,lang);else startMic(sid,lang);
+}
+function startMic(sid,lang){
+  Object.keys(MS).forEach(k=>{if(k!==sid&&MS[k].rec)stopMic(k,lang);});
+  const m=MS[sid];
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const r=new SR();
+  r.lang=lang==='zh'?'zh-CN':'en-SG';
+  r.continuous=true;r.interimResults=true;m.text='';
+  r.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)m.text+=e.results[i][0].transcript;
+      else interim=e.results[i][0].transcript;
+    }
+    document.getElementById('st'+sid).textContent=(lang==='zh'?'🔴 正在聆听：':'🔴 Listening: ')+(interim||m.text).slice(-70);
+  };
+  r.onend=()=>{if(m.rec)r.start();};
+  r.onerror=()=>{m.rec=false;const b=document.getElementById('mb'+sid);b.className='mics';b.textContent='🎙️';};
+  r.start();
+  m.obj=r;m.rec=true;
+  const b=document.getElementById('mb'+sid);
+  b.textContent='⏹️';b.className='mics rec';
+  document.getElementById('st'+sid).textContent=lang==='zh'?'🔴 正在录音... 说完请点 ⏹️':'🔴 Recording... tap ⏹️ when done';
+}
+function stopMic(sid,lang){
+  const m=MS[sid];
+  if(m.obj)try{m.obj.stop();}catch(e){}
+  m.rec=false;
+  const b=document.getElementById('mb'+sid);
+  b.textContent='✅';b.className='mics done';
+  const f=document.getElementById('vf'+sid);
+  if(m.text.trim())f.value=m.text.trim();
+  const st=document.getElementById('st'+sid);
+  st.className='vstep-st ok';
+  st.textContent=lang==='zh'?'✅ 已记录，可点击修改':'✅ Recorded — tap to edit';
+}
+
+function copyVoice(lang){
+  const ref=document.getElementById(lang+'-ref-v').value.trim();
+  let out=lang==='zh'?'✝️ 三点灵修分享\n'+getDate('zh')+'\n':'✝️ Three-Point Devotion Sharing\n'+getDate('en')+'\n';
+  if(ref){out+='\n📖 '+ref+'\n';if(VC[lang])out+=VC[lang]+'\n';}
+  const icons=['📌 1.','💬 2.','🙌 3.'];
+  const tzh=['经文在说什么？','经文对我说什么？','经文要我做什么？'];
+  const ten=['What does it say?','What does it say to me?','What does it call me to do?'];
+  for(let i=0;i<3;i++){
+    const v=(document.getElementById('vfvs'+lang+i)||{value:''}).value.trim();
+    out+='\n'+icons[i]+' '+(lang==='zh'?tzh[i]:ten[i])+'\n'+(v||(lang==='zh'?'（未填写）':'(not filled)'));
+  }
+  const pzh=['感谢主，让我明白：','赞美主，祢提醒我：','恳求主，帮助我去：'];
+  const pen=['Thank You Lord, for showing me: ','I praise You, for You reminded me: ','Lord I ask You to help me: '];
+  let hp=false;
+  for(let i=3;i<6;i++){
+    const v=(document.getElementById('vfvs'+lang+i)||{value:''}).value.trim();
+    if(v){if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+v;}
+  }
+  if(hp)out+='\n'+(lang==='zh'?'奉主耶稣的名祷告，阿们。':'In Jesus\'s name, Amen.');
+  navigator.clipboard.writeText(out).then(()=>{
+    const t=document.getElementById(lang+'-vtoast');t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }).catch(()=>alert(lang==='zh'?'已复制！':'Copied!'));
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const a=document.activeElement;
+    if(a&&a.id){
+      if(a.id.endsWith('-ref'))findVerse(a.id.replace('-ref',''));
+      else if(a.id.endsWith('-ref-v'))findVerseV(a.id.replace('-ref-v',''));
+    }
+  }
+});
+</script>
+</body>
+</html>
