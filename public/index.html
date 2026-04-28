@@ -384,70 +384,58 @@ function toggleMic(sid,lang){
 }
 
 function startMic(sid,lang){
+  // Stop other mics first
   Object.keys(MS).forEach(k=>{if(k!==sid&&MS[k].rec)stopMic(k,lang);});
   const m=MS[sid];
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  m.finalText='';
-  m.rec=true;
-  m.restartTimer=null;
-  m.sessionFinal=''; // Track what was final before each restart
+  const r=new SR();
+  r.lang=lang==='zh'?'zh-CN':'en-SG';
+  r.continuous=true;
+  r.interimResults=true;
 
-  function createAndStart(){
-    if(!m.rec)return;
-    const r=new SR();
-    r.lang=lang==='zh'?'zh-CN':'en-SG';
-    r.continuous=true;
-    r.interimResults=true;
-    m.obj=r;
-    // Save the finalText at the start of this session
-    // so we only add NEW finals from this session
-    const baseText=m.finalText;
-    let sessionAdded='';
+  // KEY FIX: preserve existing text in the box, only ADD new speech
+  const f=document.getElementById('vf'+sid);
+  const existingText=f.value.trim(); // Keep whatever was already typed/spoken
+  let newFinalText=''; // Only track NEW speech from this session
 
-    r.onresult=e=>{
-      if(m.restartTimer){clearTimeout(m.restartTimer);m.restartTimer=null;}
-      let newFinal='';
-      let interim='';
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        if(e.results[i].isFinal){
-          newFinal+=e.results[i][0].transcript;
-        } else {
-          interim+=e.results[i][0].transcript;
-        }
+  r.onresult=e=>{
+    let newFinal='';
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal){
+        newFinal+=e.results[i][0].transcript;
+      } else {
+        interim+=e.results[i][0].transcript;
       }
-      if(newFinal){
-        sessionAdded+=newFinal;
-        m.finalText=baseText+sessionAdded;
-      }
-      const f=document.getElementById('vf'+sid);
-      f.value=m.finalText+(interim?' '+interim:'');
-      document.getElementById('st'+sid).textContent='🔴 '+(lang==='zh'?'正在录音，说完点 ⏹️':'Recording... tap ⏹️ to stop');
-    };
-
-    r.onend=()=>{
-      if(!m.rec)return;
-      // Before restarting, make sure finalText is correct
-      m.restartTimer=setTimeout(()=>{
-        if(m.rec)createAndStart();
-      },200);
-    };
-
-    r.onerror=e=>{
-      if(e.error==='no-speech'){
-        if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},300);}
-        return;
-      }
-      if(e.error==='aborted')return;
-      m.rec=false;
-      finalizeField(sid,lang);
-    };
-
-    try{r.start();}catch(err){
-      if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},500);}
     }
-  }
+    if(newFinal) newFinalText+=newFinal;
+    // Show: existing + new final + interim preview
+    const combined=(existingText?existingText+' ':'')+newFinalText+(interim?' '+interim:'');
+    f.value=combined;
+    document.getElementById('st'+sid).textContent='🔴 '+(lang==='zh'?'正在录音，说完点 ⏹️':'Recording... tap ⏹️ to stop');
+  };
 
-  createAndStart();
+  r.onend=()=>{
+    // Only auto-restart if user has not stopped
+    if(m.rec){
+      try{r.start();}catch(e){
+        m.rec=false;
+        finalizeMic(sid,lang,existingText,newFinalText);
+      }
+    }
+  };
+
+  r.onerror=e=>{
+    if(e.error==='no-speech'||e.error==='aborted')return;
+    m.rec=false;
+    finalizeMic(sid,lang,existingText,newFinalText);
+  };
+
+  r.start();
+  m.obj=r;
+  m.rec=true;
+  m._existingText=existingText;
+  m._getNewText=()=>newFinalText;
   document.getElementById('mb'+sid).textContent='⏹️';
   document.getElementById('mb'+sid).className='mics rec';
   document.getElementById('st'+sid).textContent=lang==='zh'?'🔴 正在录音，说完点 ⏹️':'🔴 Recording... tap ⏹️ to stop';
@@ -456,21 +444,27 @@ function startMic(sid,lang){
 function stopMic(sid,lang){
   const m=MS[sid];
   m.rec=false;
-  if(m.restartTimer){clearTimeout(m.restartTimer);m.restartTimer=null;}
   if(m.obj){try{m.obj.stop();}catch(e){}}
-  finalizeField(sid,lang);
+  const existing=m._existingText||'';
+  const newText=m._getNewText?m._getNewText():'';
+  finalizeMic(sid,lang,existing,newText);
 }
 
-function finalizeField(sid,lang){
-  const m=MS[sid];
+function finalizeMic(sid,lang,existingText,newFinalText){
   const f=document.getElementById('vf'+sid);
-  const clean=m.finalText.trim();
-  if(clean)f.value=clean;
+  // Combine existing + new, clean up spaces
+  const combined=[existingText,newFinalText].filter(t=>t.trim()).join(' ').trim();
+  if(combined) f.value=combined;
   document.getElementById('mb'+sid).textContent='✅';
   document.getElementById('mb'+sid).className='mics done';
   const st=document.getElementById('st'+sid);
   st.className='vstep-st ok';
   st.textContent=lang==='zh'?'✅ 已记录，可点击文字框修改':'✅ Recorded — tap the text box to edit';
+}
+
+// Keep old finalizeField for compatibility
+function finalizeField(sid,lang){
+  finalizeMic(sid,lang,MS[sid]?._existingText||'',MS[sid]?._getNewText?(MS[sid]._getNewText()):'');
 }
 
 function copyVoice(lang){
