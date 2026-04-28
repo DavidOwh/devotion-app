@@ -468,13 +468,15 @@ function copyVoice(lang){
     out+='\n'+icons[i]+' '+(lang==='zh'?tzh[i]:ten[i])+'\n'+(v||(lang==='zh'?'（未填写）':'(not filled)'));
   }
   const pzh=['感谢主，让我明白：','赞美主，祢提醒我：','恳求主，帮助我去：'];
-  const pen=['Thank You Lord, for showing me: ','I praise You, for You reminded me: ','Lord I ask You to help me: '];
+  const pen=['Thank You Lord, for showing me:','I praise You, for You reminded me:','Lord I ask You to help me:'];
   let hp=false;
   for(let i=3;i<6;i++){
     const v=(document.getElementById('vfvs'+lang+i)||{value:''}).value.trim();
-    if(v){if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+'\n'+v;}
+    if(v){
+      if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}
+      out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+'\n'+v;
+    }
   }
-  if(hp){}
   navigator.clipboard.writeText(out).then(()=>{
     const t=document.getElementById(lang+'-vtoast');t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),3000);
