@@ -12,21 +12,21 @@ const MAP = {"约":"JHN","约翰福音":"JHN","太":"MAT","马太福音":"MAT","
 
 const ZHN = {"JHN":"约翰福音","MAT":"马太福音","MRK":"马可福音","LUK":"路加福音","ACT":"使徒行传","ROM":"罗马书","1CO":"哥林多前书","2CO":"哥林多后书","GAL":"加拉太书","EPH":"以弗所书","PHP":"腓立比书","COL":"歌罗西书","1TH":"帖撒罗尼迦前书","2TH":"帖撒罗尼迦后书","1TI":"提摩太前书","2TI":"提摩太后书","TIT":"提多书","HEB":"希伯来书","JAS":"雅各书","1PE":"彼得前书","2PE":"彼得后书","1JO":"约翰一书","2JO":"约翰二书","3JO":"约翰三书","JDE":"犹大书","REV":"启示录","PSA":"诗篇","PRO":"箴言","ECC":"传道书","GEN":"创世记","EXO":"出埃及记","LEV":"利未记","NUM":"民数记","DEU":"申命记","JOS":"约书亚记","JDG":"士师记","RUT":"路得记","1SA":"撒母耳记上","2SA":"撒母耳记下","1KI":"列王纪上","2KI":"列王纪下","1CH":"历代志上","2CH":"历代志下","EZR":"以斯拉记","NEH":"尼希米记","EST":"以斯帖记","JOB":"约伯记","ISA":"以赛亚书","JER":"耶利米书","LAM":"耶利米哀歌","EZK":"以西结书","DAN":"但以理书","HOS":"何西阿书","JOL":"约珥书","AMO":"阿摩司书","MIC":"弥迦书","HAB":"哈巴谷书","MAL":"玛拉基书"};
 
-// Traditional to Simplified Chinese character conversion (common biblical terms)
-function toSimplified(text) {
-  const map = {"愛":"爱","賜":"赐","們":"们","這":"这","會":"会","說":"说","來":"来","個":"个","時":"时","從":"从","為":"为","對":"对","她":"她","後":"后","國":"国","學":"学","發":"发","開":"开","問":"问","聽":"听","見":"见","讓":"让","話":"话","長":"长","點":"点","實":"实","還":"还","樣":"样","過":"过","邊":"边","間":"间","義":"义","頭":"头","書":"书","語":"语","親":"亲","體":"体","萬":"万","兒":"儿","當":"当","給":"给","處":"处","動":"动","號":"号","關":"关","帶":"带","門":"门","馬":"马","離":"离","讓":"让","換":"换","達":"达","權":"权","歡":"欢","麼":"么","啟":"启","傳":"传","經":"经","難":"难","豐":"丰","積":"积","類":"类","總":"总","壞":"坏","強":"强","華":"华","稱":"称","聖":"圣","靈":"灵","廣":"广","進":"进","錯":"错","負":"负","際":"际","顯":"显","讚":"赞","願":"愿","禱":"祷","認":"认","讀":"读","誰":"谁","講":"讲","謝":"谢","謙":"谦","謹":"谨","譯":"译","護":"护","禮":"礼","視":"视","記":"记","設":"设","試":"试","詩":"诗","話":"话","誡":"诫","誓":"誓","賞":"赏","貴":"贵","質":"质","財":"财","貧":"贫","費":"费","賣":"卖","購":"购","贖":"赎","贊":"赞","輝":"辉","輕":"轻","輸":"输","輸":"输","輪":"轮","軍":"军","連":"连","造":"造","遠":"远","選":"选","遺":"遗","邏":"逻","部":"部","鄰":"邻","醒":"醒","針":"针","錢":"钱","鐵":"铁","鑰":"钥","長":"长","門":"门","陽":"阳","陰":"阴","隱":"隐","靜":"静","頌":"颂","風":"风","飲":"饮","餅":"饼","餘":"余","養":"养","駕":"驾","驚":"惊","骨":"骨","髮":"发","鬥":"斗","黑":"黑","默":"默","齊":"齐"};
-  return text.split('').map(c => map[c] || c).join('');
+const ENN = {"JHN":"John","MAT":"Matthew","MRK":"Mark","LUK":"Luke","ACT":"Acts","ROM":"Romans","1CO":"1 Corinthians","2CO":"2 Corinthians","GAL":"Galatians","EPH":"Ephesians","PHP":"Philippians","COL":"Colossians","1TH":"1 Thessalonians","2TH":"2 Thessalonians","1TI":"1 Timothy","2TI":"2 Timothy","TIT":"Titus","HEB":"Hebrews","JAS":"James","1PE":"1 Peter","2PE":"2 Peter","1JO":"1 John","2JO":"2 John","3JO":"3 John","JDE":"Jude","REV":"Revelation","PSA":"Psalms","PRO":"Proverbs","ECC":"Ecclesiastes","GEN":"Genesis","EXO":"Exodus","LEV":"Leviticus","NUM":"Numbers","DEU":"Deuteronomy","JOS":"Joshua","JDG":"Judges","RUT":"Ruth","1SA":"1 Samuel","2SA":"2 Samuel","1KI":"1 Kings","2KI":"2 Kings","1CH":"1 Chronicles","2CH":"2 Chronicles","EZR":"Ezra","NEH":"Nehemiah","EST":"Esther","JOB":"Job","ISA":"Isaiah","JER":"Jeremiah","LAM":"Lamentations","EZK":"Ezekiel","DAN":"Daniel","HOS":"Hosea","JOL":"Joel","AMO":"Amos","MIC":"Micah","HAB":"Habakkuk","MAL":"Malachi"};
+
+// Traditional to Simplified Chinese
+function toSimp(t) {
+  const m={"愛":"爱","賜":"赐","們":"们","這":"这","會":"会","說":"说","來":"来","個":"个","時":"时","從":"从","為":"为","對":"对","後":"后","國":"国","學":"学","發":"发","開":"开","問":"问","聽":"听","見":"见","讓":"让","話":"话","長":"长","點":"点","實":"实","還":"还","樣":"样","過":"过","邊":"边","間":"间","義":"义","頭":"头","書":"书","語":"语","親":"亲","體":"体","萬":"万","兒":"儿","當":"当","給":"给","處":"处","動":"动","號":"号","關":"关","帶":"带","門":"门","馬":"马","離":"离","換":"换","達":"达","權":"权","歡":"欢","麼":"么","啟":"启","傳":"传","經":"经","難":"难","豐":"丰","積":"积","類":"类","總":"总","壞":"坏","強":"强","華":"华","稱":"称","聖":"圣","靈":"灵","廣":"广","進":"进","錯":"错","負":"负","際":"际","顯":"显","讚":"赞","願":"愿","禱":"祷","認":"认","讀":"读","誰":"谁","講":"讲","謝":"谢","謙":"谦","護":"护","禮":"礼","視":"视","記":"记","設":"设","試":"试","詩":"诗","誡":"诫","賞":"赏","貴":"贵","質":"质","財":"财","貧":"贫","費":"费","賣":"卖","贖":"赎","輝":"辉","輕":"轻","輸":"输","輪":"轮","軍":"军","遠":"远","選":"选","遺":"遗","鄰":"邻","錢":"钱","鐵":"铁","鑰":"钥","陽":"阳","陰":"阴","隱":"隐","靜":"静","頌":"颂","風":"风","飲":"饮","餅":"饼","餘":"余","養":"养","驚":"惊","髮":"发","齊":"齐","創":"创","離":"离","獨":"独","賜":"赐","滅":"灭","亡":"亡","得":"得","永":"永","生":"生","信":"信","叫":"叫","甚":"甚","至":"至","將":"将","神":"神","世":"世","人":"人","愛":"爱","因":"因","不":"不","反":"反","切":"切","他":"他","的":"的"};
+  return t.split('').map(c=>m[c]||c).join('');
 }
 
 app.post("/api/verse", async (req, res) => {
   const { reference } = req.body || {};
   if (!reference) return res.status(400).json({ error: "Reference required" });
-  
   let s = reference.trim().replace(/：/g,':').replace(/\s+/g,' ');
   const rng = s.match(/(\d+):(\d+)-(\d+)$/);
   const single = s.match(/(\d+):(\d+)$/);
   if (!rng && !single) return res.status(400).json({ error: "格式错误" });
-  
   const isR = !!rng;
   const ch = parseInt(isR ? rng[1] : single[1]);
   const v1 = parseInt(isR ? rng[2] : single[2]);
@@ -34,8 +34,10 @@ app.post("/api/verse", async (req, res) => {
   const bookRaw = s.slice(0, s.lastIndexOf(isR ? rng[0] : single[0])).trim().replace(/\s+/g,'');
   const bookCode = MAP[bookRaw] || MAP[bookRaw.toLowerCase()] || null;
   if (!bookCode) return res.status(404).json({ error: "not_found" });
-  const zhName = ZHN[bookCode] || bookCode;
   
+  const zhName = ZHN[bookCode] || bookCode;
+  const enName = ENN[bookCode] || bookCode;
+
   try {
     const lines_zh = [], lines_en = [];
     for (let v = v1; v <= v2; v++) {
@@ -46,15 +48,16 @@ app.post("/api/verse", async (req, res) => {
       if (r1.ok) {
         const d = await r1.json();
         if (d.text) {
-          // Remove HTML, remove spaces between Chinese characters, convert to simplified
           const clean = d.text.replace(/<[^>]*>/g,'').replace(/\s+/g,'').trim();
-          const simplified = toSimplified(clean);
-          lines_zh.push(`${zhName}${ch}:${v} ${simplified}`);
+          lines_zh.push(`${zhName}${ch}:${v} ${toSimp(clean)}`);
         }
       }
       if (r2.ok) {
         const d = await r2.json();
-        if (d.text) lines_en.push(`${zhName}${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`);
+        if (d.text) {
+          const clean = d.text.replace(/<[^>]*>/g,'').trim();
+          lines_en.push(`${enName} ${ch}:${v} ${clean}`);
+        }
       }
     }
     if (!lines_zh.length && !lines_en.length) return res.status(404).json({ error: "not_found" });
