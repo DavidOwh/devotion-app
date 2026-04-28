@@ -14,9 +14,6 @@ const ZHN = {"JHN":"约翰福音","MAT":"马太福音","MRK":"马可福音","LUK
 
 const ENN = {"JHN":"John","MAT":"Matthew","MRK":"Mark","LUK":"Luke","ACT":"Acts","ROM":"Romans","1CO":"1 Corinthians","2CO":"2 Corinthians","GAL":"Galatians","EPH":"Ephesians","PHP":"Philippians","COL":"Colossians","1TH":"1 Thessalonians","2TH":"2 Thessalonians","1TI":"1 Timothy","2TI":"2 Timothy","TIT":"Titus","HEB":"Hebrews","JAS":"James","1PE":"1 Peter","2PE":"2 Peter","1JO":"1 John","2JO":"2 John","3JO":"3 John","JDE":"Jude","REV":"Revelation","PSA":"Psalms","PRO":"Proverbs","ECC":"Ecclesiastes","GEN":"Genesis","EXO":"Exodus","LEV":"Leviticus","NUM":"Numbers","DEU":"Deuteronomy","JOS":"Joshua","JDG":"Judges","RUT":"Ruth","1SA":"1 Samuel","2SA":"2 Samuel","1KI":"1 Kings","2KI":"2 Kings","1CH":"1 Chronicles","2CH":"2 Chronicles","EZR":"Ezra","NEH":"Nehemiah","EST":"Esther","JOB":"Job","ISA":"Isaiah","JER":"Jeremiah","LAM":"Lamentations","EZK":"Ezekiel","DAN":"Daniel","HOS":"Hosea","JOL":"Joel","AMO":"Amos","MIC":"Micah","HAB":"Habakkuk","MAL":"Malachi"};
 
-// getBible book number map
-const BOOK_NUM = {"GEN":1,"EXO":2,"LEV":3,"NUM":4,"DEU":5,"JOS":6,"JDG":7,"RUT":8,"1SA":9,"2SA":10,"1KI":11,"2KI":12,"1CH":13,"2CH":14,"EZR":15,"NEH":16,"EST":17,"JOB":18,"PSA":19,"PRO":20,"ECC":21,"SNG":22,"ISA":23,"JER":24,"LAM":25,"EZK":26,"DAN":27,"HOS":28,"JOL":29,"AMO":30,"OBA":31,"JNA":32,"MIC":33,"NAM":34,"HAB":35,"ZEP":36,"HAG":37,"ZEC":38,"MAL":39,"MAT":40,"MRK":41,"LUK":42,"JHN":43,"ACT":44,"ROM":45,"1CO":46,"2CO":47,"GAL":48,"EPH":49,"PHP":50,"COL":51,"1TH":52,"2TH":53,"1TI":54,"2TI":55,"TIT":56,"PHM":57,"HEB":58,"JAS":59,"1PE":60,"2PE":61,"1JO":62,"2JO":63,"3JO":64,"JDE":65,"REV":66};
-
 app.post("/api/verse", async (req, res) => {
   const { reference } = req.body || {};
   if (!reference) return res.status(400).json({ error: "Reference required" });
@@ -34,31 +31,35 @@ app.post("/api/verse", async (req, res) => {
 
   const zhName = ZHN[bookCode] || bookCode;
   const enName = ENN[bookCode] || bookCode;
-  const bookNum = BOOK_NUM[bookCode];
-  if (!bookNum) return res.status(404).json({ error: "not_found" });
 
   try {
     const lines_zh = [], lines_en = [];
+
     for (let v = v1; v <= v2; v++) {
-      const [r1, r2] = await Promise.all([
-        // getBible API - simplified Chinese (zh_cuv)
-        fetch(`https://getbible.net/v2/zh_cuv/${bookNum}/${ch}.json`),
-        // bolls.life for ESV
-        fetch(`https://bolls.life/get-verse/ESV/${bookCode}/${ch}/${v}/`)
-      ]);
+      // Chinese: use bolls.life CUV (traditional) then remove spaces
+      const r1 = await fetch(`https://bolls.life/get-verse/CUV/${bookCode}/${ch}/${v}/`);
       if (r1.ok) {
-        const chData = await r1.json();
-        const verseText = chData.verses?.[v-1]?.verse || chData.verses?.[String(v)]?.verse || '';
-        if (verseText) lines_zh.push(`${zhName}${ch}:${v} ${verseText.trim()}`);
+        const d = await r1.json();
+        if (d.text) {
+          const clean = d.text.replace(/<[^>]*>/g,'').replace(/\s+/g,'').trim();
+          lines_zh.push(`${zhName}${ch}:${v} ${clean}`);
+        }
       }
+
+      // English: use bolls.life ESV
+      const r2 = await fetch(`https://bolls.life/get-verse/ESV/${bookCode}/${ch}/${v}/`);
       if (r2.ok) {
         const d = await r2.json();
-        if (d.text) lines_en.push(`${enName} ${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`);
+        if (d.text) {
+          lines_en.push(`${enName} ${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`);
+        }
       }
     }
+
     if (!lines_zh.length && !lines_en.length) return res.status(404).json({ error: "not_found" });
     res.json({ zh: lines_zh.join('\n'), en: lines_en.join('\n') });
   } catch(e) {
+    console.log("Error:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
