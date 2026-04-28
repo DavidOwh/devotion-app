@@ -384,58 +384,59 @@ function toggleMic(sid,lang){
 }
 
 function startMic(sid,lang){
-  // Stop other mics first
   Object.keys(MS).forEach(k=>{if(k!==sid&&MS[k].rec)stopMic(k,lang);});
   const m=MS[sid];
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   const r=new SR();
   r.lang=lang==='zh'?'zh-CN':'en-SG';
-  r.continuous=true;
-  r.interimResults=true;
+  r.continuous=false; // NO auto restart — user controls start/stop
+  r.interimResults=false; // Only final results — NO interim to cause duplicates
 
-  // KEY FIX: preserve existing text in the box, only ADD new speech
   const f=document.getElementById('vf'+sid);
-  const existingText=f.value.trim(); // Keep whatever was already typed/spoken
-  let newFinalText=''; // Only track NEW speech from this session
+  const prefix=f.value.trim(); // Keep existing text
 
   r.onresult=e=>{
-    let newFinal='';
-    let interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal){
-        newFinal+=e.results[i][0].transcript;
-      } else {
-        interim+=e.results[i][0].transcript;
-      }
+    let newText='';
+    for(let i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal) newText+=e.results[i][0].transcript;
     }
-    if(newFinal) newFinalText+=newFinal;
-    // Show: existing + new final + interim preview
-    const combined=(existingText?existingText+' ':'')+newFinalText+(interim?' '+interim:'');
-    f.value=combined;
-    document.getElementById('st'+sid).textContent='🔴 '+(lang==='zh'?'正在录音，说完点 ⏹️':'Recording... tap ⏹️ to stop');
+    if(newText){
+      f.value=(prefix?prefix+' ':'')+newText.trim();
+    }
   };
 
   r.onend=()=>{
-    // Only auto-restart if user has not stopped
-    if(m.rec){
-      try{r.start();}catch(e){
-        m.rec=false;
-        finalizeMic(sid,lang,existingText,newFinalText);
-      }
+    m.rec=false;
+    m.obj=null;
+    document.getElementById('mb'+sid).textContent='🎙️';
+    document.getElementById('mb'+sid).className='mics';
+    const st=document.getElementById('st'+sid);
+    const hasText=f.value.trim().length>0;
+    if(hasText){
+      st.className='vstep-st ok';
+      st.textContent=lang==='zh'?'✅ 已记录，再按 🎙️ 可继续说':'✅ Recorded — tap 🎙️ to add more';
+      document.getElementById('mb'+sid).className='mics done';
+      document.getElementById('mb'+sid).textContent='✅';
+    } else {
+      st.className='vstep-st';
+      st.textContent=lang==='zh'?'点 🎙️ 开始说话':'Tap 🎙️ to speak';
     }
   };
 
   r.onerror=e=>{
-    if(e.error==='no-speech'||e.error==='aborted')return;
+    if(e.error==='aborted')return;
     m.rec=false;
-    finalizeMic(sid,lang,existingText,newFinalText);
+    m.obj=null;
+    document.getElementById('mb'+sid).textContent='🎙️';
+    document.getElementById('mb'+sid).className='mics';
+    if(e.error==='no-speech'){
+      document.getElementById('st'+sid).textContent=lang==='zh'?'没有听到声音，请再试':'No speech detected, try again';
+    }
   };
 
   r.start();
   m.obj=r;
   m.rec=true;
-  m._existingText=existingText;
-  m._getNewText=()=>newFinalText;
   document.getElementById('mb'+sid).textContent='⏹️';
   document.getElementById('mb'+sid).className='mics rec';
   document.getElementById('st'+sid).textContent=lang==='zh'?'🔴 正在录音，说完点 ⏹️':'🔴 Recording... tap ⏹️ to stop';
@@ -445,26 +446,15 @@ function stopMic(sid,lang){
   const m=MS[sid];
   m.rec=false;
   if(m.obj){try{m.obj.stop();}catch(e){}}
-  const existing=m._existingText||'';
-  const newText=m._getNewText?m._getNewText():'';
-  finalizeMic(sid,lang,existing,newText);
 }
 
-function finalizeMic(sid,lang,existingText,newFinalText){
+function finalizeField(sid,lang){
   const f=document.getElementById('vf'+sid);
-  // Combine existing + new, clean up spaces
-  const combined=[existingText,newFinalText].filter(t=>t.trim()).join(' ').trim();
-  if(combined) f.value=combined;
   document.getElementById('mb'+sid).textContent='✅';
   document.getElementById('mb'+sid).className='mics done';
   const st=document.getElementById('st'+sid);
   st.className='vstep-st ok';
   st.textContent=lang==='zh'?'✅ 已记录，可点击文字框修改':'✅ Recorded — tap the text box to edit';
-}
-
-// Keep old finalizeField for compatibility
-function finalizeField(sid,lang){
-  finalizeMic(sid,lang,MS[sid]?._existingText||'',MS[sid]?._getNewText?(MS[sid]._getNewText()):'');
 }
 
 function copyVoice(lang){
