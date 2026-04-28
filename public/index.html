@@ -476,7 +476,7 @@ function copyVoice(lang){
     const v=(document.getElementById('vfvs'+lang+i)||{value:''}).value.trim();
     if(v){
       if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}
-      out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+'\n'+v;
+      out+='\n\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+'\n'+v;
     }
   }
   navigator.clipboard.writeText(out).then(()=>{
