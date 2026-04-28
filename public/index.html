@@ -390,6 +390,7 @@ function startMic(sid,lang){
   m.finalText='';
   m.rec=true;
   m.restartTimer=null;
+  m.sessionFinal=''; // Track what was final before each restart
 
   function createAndStart(){
     if(!m.rec)return;
@@ -398,16 +399,25 @@ function startMic(sid,lang){
     r.continuous=true;
     r.interimResults=true;
     m.obj=r;
+    // Save the finalText at the start of this session
+    // so we only add NEW finals from this session
+    const baseText=m.finalText;
+    let sessionAdded='';
 
     r.onresult=e=>{
       if(m.restartTimer){clearTimeout(m.restartTimer);m.restartTimer=null;}
+      let newFinal='';
       let interim='';
       for(let i=e.resultIndex;i<e.results.length;i++){
         if(e.results[i].isFinal){
-          m.finalText+=e.results[i][0].transcript;
+          newFinal+=e.results[i][0].transcript;
         } else {
           interim+=e.results[i][0].transcript;
         }
+      }
+      if(newFinal){
+        sessionAdded+=newFinal;
+        m.finalText=baseText+sessionAdded;
       }
       const f=document.getElementById('vf'+sid);
       f.value=m.finalText+(interim?' '+interim:'');
@@ -416,14 +426,15 @@ function startMic(sid,lang){
 
     r.onend=()=>{
       if(!m.rec)return;
+      // Before restarting, make sure finalText is correct
       m.restartTimer=setTimeout(()=>{
         if(m.rec)createAndStart();
-      },300);
+      },200);
     };
 
     r.onerror=e=>{
       if(e.error==='no-speech'){
-        if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},500);}
+        if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},300);}
         return;
       }
       if(e.error==='aborted')return;
