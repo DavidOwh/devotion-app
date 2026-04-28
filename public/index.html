@@ -312,14 +312,14 @@ function bp(lang){
     out+='\n📌 1. 经文在说什么？\n'+(q1||'（未填写）');
     out+='\n\n💬 2. 经文对我说什么？\n'+(q2||'（未填写）');
     out+='\n\n🙌 3. 经文要我做什么？\n'+(q3||'（未填写）');
-    if(p1||p2||p3){out+='\n\n🙏 灵修后祷告';if(p1)out+='\n感谢主，让我明白：'+p1;if(p2)out+='\n赞美主，祢提醒我：'+p2;if(p3)out+='\n恳求主，帮助我去：'+p3;out+='\n奉主耶稣的名祷告，阿们。';}
+    if(p1||p2||p3){out+='\n\n🙏 灵修后祷告';if(p1)out+='\n感谢主，让我明白：\n'+p1;if(p2)out+='\n\n赞美主，祢提醒我：\n'+p2;if(p3)out+='\n\n恳求主，帮助我去：\n'+p3;}
   }else{
     out='✝️ Three-Point Devotion Sharing\n'+getDate('en')+'\n';
     if(ref){out+='\n📖 '+ref+'\n';if(VC.en)out+=VC.en+'\n';}
     out+='\n📌 1. What does it say?\n'+(q1||'(not filled)');
     out+='\n\n💬 2. What does it say to me?\n'+(q2||'(not filled)');
     out+='\n\n🙌 3. What does it call me to do?\n'+(q3||'(not filled)');
-    if(p1||p2||p3){out+='\n\n🙏 Prayer Response';if(p1)out+='\nThank You Lord, for showing me: '+p1;if(p2)out+='\nI praise You, for You reminded me: '+p2;if(p3)out+='\nLord I ask You to help me: '+p3;out+='\nIn Jesus\'s name, Amen.';}
+    if(p1||p2||p3){out+='\n\n🙏 Prayer Response';if(p1)out+='\nThank You Lord, for showing me:\n'+p1;if(p2)out+='\n\nI praise You, for You reminded me:\n'+p2;if(p3)out+='\n\nLord I ask You to help me:\n'+p3;}
   }
   el.textContent=out;
 }
@@ -472,9 +472,9 @@ function copyVoice(lang){
   let hp=false;
   for(let i=3;i<6;i++){
     const v=(document.getElementById('vfvs'+lang+i)||{value:''}).value.trim();
-    if(v){if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+v;}
+    if(v){if(!hp){out+='\n\n🙏 '+(lang==='zh'?'灵修后祷告':'Prayer Response');hp=true;}out+='\n'+(lang==='zh'?pzh[i-3]:pen[i-3])+'\n'+v;}
   }
-  if(hp)out+='\n'+(lang==='zh'?'奉主耶稣的名祷告，阿们。':'In Jesus\'s name, Amen.');
+  if(hp){}
   navigator.clipboard.writeText(out).then(()=>{
     const t=document.getElementById(lang+'-vtoast');t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),3000);
