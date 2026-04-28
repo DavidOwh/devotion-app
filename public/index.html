@@ -384,56 +384,68 @@ function toggleMic(sid,lang){
 }
 
 function startMic(sid,lang){
-  // Stop any other active mics first
   Object.keys(MS).forEach(k=>{if(k!==sid&&MS[k].rec)stopMic(k,lang);});
   const m=MS[sid];
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const r=new SR();
-  r.lang=lang==='zh'?'zh-CN':'en-SG';
-  r.continuous=true;
-  r.interimResults=true;
   m.finalText='';
-  m.interimText='';
+  m.rec=true;
+  m.restartTimer=null;
 
-  r.onresult=e=>{
-    let interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal){
-        m.finalText+=e.results[i][0].transcript;
-      } else {
-        interim+=e.results[i][0].transcript;
+  function createAndStart(){
+    if(!m.rec)return;
+    const r=new SR();
+    r.lang=lang==='zh'?'zh-CN':'en-SG';
+    r.continuous=true;
+    r.interimResults=true;
+    m.obj=r;
+
+    r.onresult=e=>{
+      if(m.restartTimer){clearTimeout(m.restartTimer);m.restartTimer=null;}
+      let interim='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        if(e.results[i].isFinal){
+          m.finalText+=e.results[i][0].transcript;
+        } else {
+          interim+=e.results[i][0].transcript;
+        }
       }
+      const f=document.getElementById('vf'+sid);
+      f.value=m.finalText+(interim?' '+interim:'');
+      document.getElementById('st'+sid).textContent='🔴 '+(lang==='zh'?'正在录音，说完点 ⏹️':'Recording... tap ⏹️ to stop');
+    };
+
+    r.onend=()=>{
+      if(!m.rec)return;
+      m.restartTimer=setTimeout(()=>{
+        if(m.rec)createAndStart();
+      },300);
+    };
+
+    r.onerror=e=>{
+      if(e.error==='no-speech'){
+        if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},500);}
+        return;
+      }
+      if(e.error==='aborted')return;
+      m.rec=false;
+      finalizeField(sid,lang);
+    };
+
+    try{r.start();}catch(err){
+      if(m.rec){m.restartTimer=setTimeout(()=>{if(m.rec)createAndStart();},500);}
     }
-    m.interimText=interim;
-    // Show live preview in the textarea
-    const f=document.getElementById('vf'+sid);
-    f.value=m.finalText+(interim?' ['+interim+']':'');
-    document.getElementById('st'+sid).textContent='🔴 '+(lang==='zh'?'正在录音...':'Recording...')+' '+m.finalText.slice(-30);
-  };
+  }
 
-  r.onend=()=>{
-    if(m.rec){
-      // Auto-restart if still recording
-      try{r.start();}catch(e){m.rec=false;finalizeField(sid,lang);}
-    }
-  };
-
-  r.onerror=(e)=>{
-    if(e.error==='no-speech')return; // Ignore no-speech, just continue
-    m.rec=false;
-    finalizeField(sid,lang);
-  };
-
-  r.start();
-  m.obj=r;m.rec=true;
+  createAndStart();
   document.getElementById('mb'+sid).textContent='⏹️';
   document.getElementById('mb'+sid).className='mics rec';
-  document.getElementById('st'+sid).textContent=lang==='zh'?'🔴 正在录音... 说完点 ⏹️':'🔴 Recording... tap ⏹️ when done';
+  document.getElementById('st'+sid).textContent=lang==='zh'?'🔴 正在录音，说完点 ⏹️':'🔴 Recording... tap ⏹️ to stop';
 }
 
 function stopMic(sid,lang){
   const m=MS[sid];
   m.rec=false;
+  if(m.restartTimer){clearTimeout(m.restartTimer);m.restartTimer=null;}
   if(m.obj){try{m.obj.stop();}catch(e){}}
   finalizeField(sid,lang);
 }
@@ -441,9 +453,8 @@ function stopMic(sid,lang){
 function finalizeField(sid,lang){
   const m=MS[sid];
   const f=document.getElementById('vf'+sid);
-  // Use final text, clean up interim brackets
   const clean=m.finalText.trim();
-  if(clean) f.value=clean;
+  if(clean)f.value=clean;
   document.getElementById('mb'+sid).textContent='✅';
   document.getElementById('mb'+sid).className='mics done';
   const st=document.getElementById('st'+sid);
