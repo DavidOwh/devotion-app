@@ -367,7 +367,7 @@ function buildSteps(lang){
   if(wrap.children.length>0)return;
   SD[lang].forEach((s,i)=>{
     const sid='vs'+lang+i;
-    MS[sid]={rec:false,obj:null,finalText:'',interimText:''};
+    MS[sid]={rec:false,obj:null};
     const isE=isNaN(parseInt(s.n));
     const nEl=isE?'<span style="font-size:15px">'+s.n+'</span>':'<div class="vstep-n">'+s.n+'</div>';
     const d=document.createElement('div');d.className='vstep';
@@ -384,6 +384,7 @@ function toggleMic(sid,lang){
 }
 
 function startMic(sid,lang){
+  // Stop all other mics first
   Object.keys(MS).forEach(k=>{if(k!==sid&&MS[k].rec)stopMic(k,lang);});
   const m=MS[sid];
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -391,26 +392,28 @@ function startMic(sid,lang){
   r.lang=lang==='zh'?'zh-CN':'en-SG';
   r.continuous=false;
   r.interimResults=false;
-
-  const f=document.getElementById('vf'+sid);
-  const prefix=f.value.trim();
-  let done=false; // Prevent double firing
+  let processed=false;
 
   r.onresult=e=>{
-    if(done)return; // Already processed — ignore
-    done=true;
+    if(processed)return;
+    processed=true;
     let newText='';
     for(let i=0;i<e.results.length;i++){
       if(e.results[i].isFinal) newText+=e.results[i][0].transcript;
     }
-    if(newText.trim()){
-      f.value=(prefix?prefix+' ':'')+newText.trim();
+    newText=newText.trim();
+    if(newText){
+      const f=document.getElementById('vf'+sid);
+      const existing=f.value.trim();
+      // ONLY append to THIS field
+      f.value=existing?existing+' '+newText:newText;
     }
   };
 
   r.onend=()=>{
     m.rec=false;
     m.obj=null;
+    const f=document.getElementById('vf'+sid);
     const hasText=f.value.trim().length>0;
     document.getElementById('mb'+sid).textContent=hasText?'✅':'🎙️';
     document.getElementById('mb'+sid).className=hasText?'mics done':'mics';
@@ -418,7 +421,7 @@ function startMic(sid,lang){
     st.className=hasText?'vstep-st ok':'vstep-st';
     st.textContent=hasText
       ?(lang==='zh'?'✅ 已记录，再按 🎙️ 可继续添加':'✅ Recorded — tap 🎙️ to add more')
-      :(lang==='zh'?'点 🎙️ 开始说话':'Tap 🎙️ to speak');
+      :(lang==='zh'?'没有听到，请再试':'No speech detected, try again');
   };
 
   r.onerror=e=>{
@@ -448,7 +451,6 @@ function stopMic(sid,lang){
 }
 
 function finalizeField(sid,lang){
-  const f=document.getElementById('vf'+sid);
   document.getElementById('mb'+sid).textContent='✅';
   document.getElementById('mb'+sid).className='mics done';
   const st=document.getElementById('st'+sid);
