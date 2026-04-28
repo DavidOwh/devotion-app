@@ -31,7 +31,7 @@ app.post("/api/verse", async (req, res) => {
     const lines_zh = [], lines_en = [];
     for (let v = v1; v <= v2; v++) {
       const [r1, r2] = await Promise.all([
-        fetch(`https://bolls.life/get-verse/CUV/${bookCode}/${ch}/${v}/`),
+        fetch(`https://bolls.life/get-verse/CUVS/${bookCode}/${ch}/${v}/`),
         fetch(`https://bolls.life/get-verse/ESV/${bookCode}/${ch}/${v}/`)
       ]);
       if (r1.ok) { const d = await r1.json(); if(d.text) lines_zh.push(`${zhName}${ch}:${v} ${d.text.replace(/<[^>]*>/g,'').trim()}`); }
