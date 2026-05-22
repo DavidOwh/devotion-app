@@ -65,10 +65,10 @@ app.get("/api/hokkien-audio", async (req, res) => {
   }
 
   try {
-    // Search Cloudinary for files matching the prefix
-    const searchExpr = `public_id:Hokkien-bible/${prefix}*`;
+    // Search in Hokkien-bible folder, match filename ignoring random suffix
+    const searchExpr = `public_id:Hokkien-bible/${prefix}_*`;
     const encoded = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/search?expression=${encodeURIComponent(searchExpr)}&max_results=1`;
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/search?expression=${encodeURIComponent(searchExpr)}&max_results=1&resource_type=video`;
 
     const r = await fetch(url, {
       headers: { 'Authorization': `Basic ${encoded}` }
