@@ -34,9 +34,9 @@
   .sc-body::-webkit-scrollbar{width:4px;}
   .sc-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:2px;}
   .verse{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
-  .vnum{font-size:22px;color:var(--gold);opacity:.7;min-width:36px;padding-top:4px;font-weight:600;flex-shrink:0;}
-  .vtxt{font-family:'Noto Serif SC',serif;font-size:28px;color:var(--cream);line-height:2;}
-  .info-msg{text-align:center;padding:28px;color:var(--text-light);font-size:13px;line-height:2;}
+  .vnum{font-size:26px;color:var(--gold);opacity:.7;min-width:40px;padding-top:4px;font-weight:600;flex-shrink:0;}
+  .vtxt{font-family:'Noto Serif SC',serif;font-size:30px;color:var(--cream);line-height:2.2;}
+  .info-msg{text-align:center;padding:28px;color:var(--text-light);font-size:24px;line-height:2;}
 
   .tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(255,255,255,.03);border-radius:12px;padding:4px;border:1px solid rgba(201,168,76,.15);}
   .tab{flex:1;padding:16px;background:none;border:none;color:var(--text-light);font-family:'Noto Serif SC',serif;font-size:45px;cursor:pointer;border-radius:8px;transition:all .3s;letter-spacing:1px;}
@@ -59,18 +59,26 @@
   .cbtn:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--gold-light);}
   .cbtn.playing{background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.15));border-color:var(--gold);color:var(--gold-light);}
 
-  #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.97);border-top:2px solid rgba(201,168,76,.4);backdrop-filter:blur(20px);z-index:100;min-height:200px;max-height:70vh;overflow:hidden;}
+  .custom-player{padding:10px 0;}
+  .progress-wrap{position:relative;height:20px;cursor:pointer;margin-bottom:8px;}
+  .progress-bg{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:8px;background:rgba(201,168,76,.2);border-radius:4px;}
+  .progress-bar{position:absolute;top:50%;transform:translateY(-50%);height:8px;background:var(--gold);border-radius:4px;width:0%;transition:width .3s;}
+  .time-row{display:flex;justify-content:space-between;font-size:22px;color:var(--text-light);margin-bottom:16px;}
+  .ctrl-row{display:flex;align-items:center;justify-content:center;gap:20px;}
+  .play-btn{width:90px;height:90px;border-radius:50%;background:var(--gold);border:none;color:#1a1208;font-size:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+  .play-btn:active{transform:scale(.95);}
+  .ctrl-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:24px;padding:14px 20px;cursor:pointer;}
+
+  #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.98);border-top:2px solid rgba(201,168,76,.4);z-index:100;min-height:280px;max-height:70vh;overflow:hidden;}
   #pbar.visible{display:block;}
   .dragbar{width:100%;height:36px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.04);border-bottom:1px solid rgba(201,168,76,.1);touch-action:none;user-select:none;}
   .dragbar::before{content:'';width:60px;height:6px;background:rgba(201,168,76,.5);border-radius:3px;}
-  .pinner{padding:20px 24px 28px;max-width:960px;margin:0 auto;}
-  .ptop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .ptitle{font-family:'Noto Serif SC',serif;color:var(--gold-light);font-size:32px;font-weight:600;}
-  .psub{font-size:18px;color:var(--text-light);margin-top:4px;letter-spacing:1px;}
-  .xbtn{background:none;border:2px solid rgba(201,168,76,.4);border-radius:8px;color:var(--gold-light);padding:12px 20px;cursor:pointer;font-size:28px;transition:all .2s;}
-  .xbtn:hover{border-color:rgba(201,168,76,.8);color:var(--gold-light);}
-  #aplayer{width:100%;height:70px;accent-color:var(--gold);border-radius:8px;display:block;}
-  .anote{font-size:18px;color:rgba(201,168,76,.6);text-align:center;margin-top:10px;letter-spacing:1px;}
+  .pinner{padding:16px 24px 24px;max-width:960px;margin:0 auto;}
+  .ptop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .ptitle{font-family:'Noto Serif SC',serif;color:var(--gold-light);font-size:30px;font-weight:600;}
+  .psub{font-size:18px;color:var(--text-light);margin-top:4px;}
+  .xbtn{background:rgba(201,168,76,.15);border:2px solid rgba(201,168,76,.4);border-radius:8px;color:var(--gold-light);padding:12px 18px;cursor:pointer;font-size:28px;}
+  .anote{font-size:20px;color:rgba(201,168,76,.5);text-align:center;margin-top:10px;}
 
   @media(max-width:480px){
     .bgrid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));}
@@ -140,8 +148,23 @@
       <div><div class="ptitle" id="ptitle">—</div><div class="psub">闽南语圣经 · Hokkien Bible</div></div>
       <button class="xbtn" onclick="closeP()">✕</button>
     </div>
-    <audio id="aplayer" controls></audio>
-    <div class="anote" id="anote">选择章节后自动播放</div>
+    <audio id="aplayer"></audio>
+    <div class="custom-player">
+      <div class="progress-wrap" onclick="seekAudio(event)">
+        <div class="progress-bg"></div>
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="time-row">
+        <span id="cur-time">0:00</span>
+        <span id="tot-time">0:00</span>
+      </div>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" onclick="skipAudio(-15)">⏮ 15s</button>
+        <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+        <button class="ctrl-btn" onclick="skipAudio(15)">15s ⏭</button>
+      </div>
+    </div>
+    <div class="anote" id="anote">选择章节后播放</div>
   </div>
 </div>
 
@@ -212,7 +235,8 @@ async function selChapter(name,prefix,ch,api,btn){
   const audio=document.getElementById('aplayer');
   audio.src=audioUrl;
   audio.load();
-  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio · 点击播放';
+  audio.play().then(()=>{document.getElementById('play-btn').textContent='⏸';}).catch(()=>{});
+  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
 
   // Load scripture
   document.getElementById('sc-title').textContent=`${name} 第${ch}章`;
@@ -241,7 +265,42 @@ async function loadScripture(api,ch){
   }
 }
 
-function closeP(){
+function togglePlay(){
+  const audio=document.getElementById('aplayer');
+  const btn=document.getElementById('play-btn');
+  if(audio.paused){audio.play();btn.textContent='⏸';}
+  else{audio.pause();btn.textContent='▶';}
+}
+function skipAudio(sec){
+  const audio=document.getElementById('aplayer');
+  audio.currentTime=Math.max(0,audio.currentTime+sec);
+}
+function seekAudio(e){
+  const audio=document.getElementById('aplayer');
+  if(!audio.duration)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  audio.currentTime=pct*audio.duration;
+}
+function updateProgress(){
+  const audio=document.getElementById('aplayer');
+  const bar=document.getElementById('progress-bar');
+  const cur=document.getElementById('cur-time');
+  const tot=document.getElementById('tot-time');
+  if(audio.duration){
+    bar.style.width=(audio.currentTime/audio.duration*100)+'%';
+    cur.textContent=fmtTime(audio.currentTime);
+    tot.textContent=fmtTime(audio.duration);
+  }
+}
+function fmtTime(s){
+  const m=Math.floor(s/60);
+  return m+':'+(Math.floor(s%60)+'').padStart(2,'0');
+}
+document.getElementById('aplayer').addEventListener('timeupdate',updateProgress);
+document.getElementById('aplayer').addEventListener('ended',()=>{document.getElementById('play-btn').textContent='▶';});
+document.getElementById('aplayer').addEventListener('play',()=>{document.getElementById('play-btn').textContent='⏸';});
+document.getElementById('aplayer').addEventListener('pause',()=>{document.getElementById('play-btn').textContent='▶';});
   const a=document.getElementById('aplayer');
   a.pause();a.src='';
   document.getElementById('pbar').classList.remove('visible');
