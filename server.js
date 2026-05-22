@@ -82,10 +82,9 @@ app.get("/api/hokkien-audio", async (req, res) => {
   }
 
   try {
-    // Search in 【圣经 (福建)】 folder with traditional Chinese filename
-    const folder = '\u3010\u5723\u7ecf (\u798f\u5efa)\u3011';
-    const searchExpr = `public_id:"${folder}/${prefix}"`;
+    // Search by public_id directly (no folder prefix in public_id)
     const encoded = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+    const searchExpr = `public_id:"${prefix}"`;
     const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/search?expression=${encodeURIComponent(searchExpr)}&max_results=1&resource_type=video`;
 
     const r = await fetch(url, {
@@ -97,7 +96,8 @@ app.get("/api/hokkien-audio", async (req, res) => {
 
     if (data.resources && data.resources.length > 0) {
       const resource = data.resources[0];
-      const audioUrl = `https://res.cloudinary.com/${cloudName}/video/upload/${encodeURIComponent(resource.public_id)}.mp3`;
+      // Use the secure_url directly from the resource
+      const audioUrl = resource.secure_url;
       res.json({ url: audioUrl });
     } else {
       res.status(404).json({ error: "not_found" });
