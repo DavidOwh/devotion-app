@@ -86,6 +86,20 @@ app.get("/api/hokkien-audio", async (req, res) => {
   }
 });
 
+// ── SCRIPTURE PROXY API ──
+app.get("/api/scripture", async (req, res) => {
+  const { book, chapter } = req.query;
+  if (!book || !chapter) return res.status(400).json({ error: "book and chapter required" });
+  try {
+    const r = await fetch(`https://bible-api.com/${book}+${chapter}?translation=cuv`);
+    if (!r.ok) throw new Error('API error');
+    const data = await r.json();
+    res.json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/hokkien-bible", (req, res) => { res.sendFile(path.join(__dirname, "public", "hokkien-bible.html")); });
 app.get("*", (req, res) => { res.sendFile(path.join(__dirname, "public", "index.html")); });
 app.listen(PORT, () => console.log(`✝️ 三点灵修分享 running on port ${PORT}`));
