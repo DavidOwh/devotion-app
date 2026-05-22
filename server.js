@@ -68,44 +68,13 @@ app.get("/api/debug-cloudinary", async (req, res) => {
 });
 
 
-// Searches Cloudinary for Hokkien Bible MP3 files securely from server side
-app.get("/api/hokkien-audio", async (req, res) => {
+// Direct Cloudinary URL builder for Hokkien Bible audio
+app.get("/api/hokkien-audio", (req, res) => {
   const { prefix } = req.query;
   if (!prefix) return res.status(400).json({ error: "prefix required" });
-
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dzttgwgl6';
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (!apiKey || !apiSecret) {
-    return res.status(500).json({ error: "Cloudinary not configured" });
-  }
-
-  try {
-    // Search by public_id directly (no folder prefix in public_id)
-    const encoded = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-    const searchExpr = `public_id:"${prefix}"`;
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/search?expression=${encodeURIComponent(searchExpr)}&max_results=1&resource_type=video`;
-
-    const r = await fetch(url, {
-      headers: { 'Authorization': `Basic ${encoded}` }
-    });
-
-    if (!r.ok) throw new Error('Cloudinary API error');
-    const data = await r.json();
-
-    if (data.resources && data.resources.length > 0) {
-      const resource = data.resources[0];
-      // Use the secure_url directly from the resource
-      const audioUrl = resource.secure_url;
-      res.json({ url: audioUrl });
-    } else {
-      res.status(404).json({ error: "not_found" });
-    }
-  } catch(e) {
-    console.error("Cloudinary error:", e.message);
-    res.status(500).json({ error: e.message });
-  }
+  const cloudName = 'dzttgwgl6';
+  const audioUrl = `https://res.cloudinary.com/${cloudName}/video/upload/${encodeURIComponent(prefix)}.mp3`;
+  res.json({ url: audioUrl });
 });
 
 // ── SCRIPTURE PROXY API ──
