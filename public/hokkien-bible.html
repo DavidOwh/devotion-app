@@ -219,7 +219,7 @@ async function selChapter(name,prefix,ch,api,btn){
 async function loadScripture(api,ch){
   const body=document.getElementById('sc-body');
   try{
-    const res=await fetch(`https://bible-api.com/${api}+${ch}?translation=cuv`);
+    const res=await fetch(`/api/scripture?book=${api}&chapter=${ch}`);
     if(!res.ok)throw new Error();
     const data=await res.json();
     if(!data.verses||!data.verses.length)throw new Error();
