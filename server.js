@@ -86,5 +86,6 @@ app.get("/api/hokkien-audio", async (req, res) => {
   }
 });
 
+app.get("/hokkien-bible", (req, res) => { res.sendFile(path.join(__dirname, "public", "hokkien-bible.html")); });
 app.get("*", (req, res) => { res.sendFile(path.join(__dirname, "public", "index.html")); });
 app.listen(PORT, () => console.log(`✝️ 三点灵修分享 running on port ${PORT}`));
