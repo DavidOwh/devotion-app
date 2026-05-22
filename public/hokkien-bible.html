@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>闽南语圣经 Hokkien Bible</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a1208;--cream:#f5edd8;--cream2:#ede0c4;--text-light:#6b5230;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--cream);font-family:'Noto Sans SC',sans-serif;min-height:100vh;
+    background-image:radial-gradient(ellipse at 20% 50%,rgba(201,168,76,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,32,32,.06) 0%,transparent 50%);}
+
+  /* BACK BUTTON */
+  .back-bar{padding:12px 20px;border-bottom:1px solid rgba(201,168,76,.1);}
+  .back-btn{background:none;border:1px solid rgba(201,168,76,.25);border-radius:8px;color:var(--text-light);padding:7px 14px;font-size:13px;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:all .2s;display:flex;align-items:center;gap:6px;}
+  .back-btn:hover{border-color:rgba(201,168,76,.5);color:var(--gold-light);}
+
+  header{text-align:center;padding:28px 20px 20px;border-bottom:1px solid rgba(201,168,76,.2);}
+  header::before{content:'✦';display:block;color:var(--gold);font-size:16px;margin-bottom:10px;opacity:.7;}
+  header h1{font-family:'Noto Serif SC',serif;font-size:clamp(22px,5vw,36px);font-weight:700;color:var(--gold-light);letter-spacing:4px;}
+  header p{font-size:12px;color:var(--text-light);margin-top:6px;letter-spacing:2px;text-transform:uppercase;}
+
+  .app-body{max-width:960px;margin:0 auto;padding:24px 16px 160px;}
+
+  #sc-panel{display:none;margin-bottom:24px;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);border-radius:14px;overflow:hidden;}
+  #sc-panel.visible{display:block;}
+  .sc-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.15);flex-wrap:wrap;gap:8px;}
+  .sc-hdr h2{font-family:'Noto Serif SC',serif;color:var(--gold-light);font-size:17px;}
+  .sc-hdr span{font-size:11px;color:var(--text-light);letter-spacing:1px;}
+  .sc-body{padding:20px;max-height:420px;overflow-y:auto;scroll-behavior:smooth;}
+  .sc-body::-webkit-scrollbar{width:4px;}
+  .sc-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:2px;}
+  .verse{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+  .vnum{font-size:11px;color:var(--gold);opacity:.7;min-width:24px;padding-top:4px;font-weight:600;flex-shrink:0;}
+  .vtxt{font-family:'Noto Serif SC',serif;font-size:16px;color:var(--cream);line-height:1.9;}
+  .info-msg{text-align:center;padding:28px;color:var(--text-light);font-size:13px;line-height:2;}
+
+  .tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(255,255,255,.03);border-radius:12px;padding:4px;border:1px solid rgba(201,168,76,.15);}
+  .tab{flex:1;padding:11px;background:none;border:none;color:var(--text-light);font-family:'Noto Serif SC',serif;font-size:13px;cursor:pointer;border-radius:8px;transition:all .3s;letter-spacing:1px;}
+  .tab.active{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));color:var(--gold-light);border:1px solid rgba(201,168,76,.3);}
+  .tab:hover:not(.active){background:rgba(255,255,255,.04);color:var(--cream);}
+
+  .bsec{display:none;}.bsec.active{display:block;}
+  .slbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);opacity:.6;margin:16px 0 8px;}
+  .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;margin-bottom:12px;}
+  .bbtn{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:9px 6px;color:var(--cream2);font-size:12px;cursor:pointer;transition:all .25s;text-align:center;}
+  .bbtn:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.35);color:var(--gold-light);transform:translateY(-1px);}
+  .bbtn.sel{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.12));border-color:rgba(201,168,76,.5);color:var(--gold-light);}
+
+  .cpanel{display:none;margin-top:20px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:18px;}
+  .cpanel.visible{display:block;}
+  .cpanel h3{font-family:'Noto Serif SC',serif;color:var(--gold-light);font-size:15px;margin-bottom:4px;}
+  .cpanel p{font-size:11px;color:var(--text-light);margin-bottom:14px;}
+  .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px;}
+  .cbtn{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.12);border-radius:6px;padding:9px 4px;color:var(--cream2);font-size:13px;cursor:pointer;transition:all .2s;text-align:center;}
+  .cbtn:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--gold-light);}
+  .cbtn.playing{background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.15));border-color:var(--gold);color:var(--gold-light);}
+
+  #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.97);border-top:1px solid rgba(201,168,76,.25);backdrop-filter:blur(20px);z-index:100;min-height:95px;max-height:70vh;overflow:hidden;}
+  #pbar.visible{display:block;}
+  .dragbar{width:100%;height:22px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.04);border-bottom:1px solid rgba(201,168,76,.1);touch-action:none;user-select:none;}
+  .dragbar::before{content:'';width:44px;height:4px;background:rgba(201,168,76,.35);border-radius:2px;transition:background .2s;}
+  .dragbar:hover::before{background:rgba(201,168,76,.7);}
+  .pinner{padding:12px 20px 14px;max-width:960px;margin:0 auto;}
+  .ptop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .ptitle{font-family:'Noto Serif SC',serif;color:var(--gold-light);font-size:15px;font-weight:600;}
+  .psub{font-size:10px;color:var(--text-light);margin-top:2px;letter-spacing:1px;}
+  .xbtn{background:none;border:1px solid rgba(201,168,76,.2);border-radius:6px;color:var(--text-light);padding:6px 10px;cursor:pointer;font-size:14px;transition:all .2s;}
+  .xbtn:hover{border-color:rgba(201,168,76,.5);color:var(--gold-light);}
+  #aplayer{width:100%;height:38px;accent-color:var(--gold);border-radius:8px;display:block;}
+  .anote{font-size:10px;color:rgba(201,168,76,.4);text-align:center;margin-top:6px;letter-spacing:1px;}
+
+  @media(max-width:480px){.bgrid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}.cgrid{grid-template-columns:repeat(auto-fill,minmax(40px,1fr));}.sc-body{max-height:300px;}.vtxt{font-size:15px;}}
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <button class="back-btn" onclick="window.location.href='/'">← 返回灵修app</button>
+</div>
+
+<header>
+  <h1>闽南语圣经</h1>
+  <p>Hokkien Bible · 和合本经文对照</p>
+</header>
+
+<div class="app-body">
+  <div id="sc-panel">
+    <div class="sc-hdr">
+      <div><h2 id="sc-title">—</h2><span>和合本 · Chinese Union Version</span></div>
+    </div>
+    <div class="sc-body" id="sc-body"><div class="info-msg">请选择书卷和章节开始阅读</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showT('ot')">旧约 Old Testament</button>
+    <button class="tab" onclick="showT('nt')">新约 New Testament</button>
+  </div>
+
+  <div class="bsec active" id="ot-sec">
+    <div class="slbl">律法书 Torah</div><div class="bgrid" id="ot-law"></div>
+    <div class="slbl">历史书 History</div><div class="bgrid" id="ot-hist"></div>
+    <div class="slbl">诗歌书 Poetry</div><div class="bgrid" id="ot-poet"></div>
+    <div class="slbl">先知书 Prophets</div><div class="bgrid" id="ot-prop"></div>
+  </div>
+  <div class="bsec" id="nt-sec">
+    <div class="slbl">四福音书 Gospels</div><div class="bgrid" id="nt-gosp"></div>
+    <div class="slbl">使徒行传 Acts</div><div class="bgrid" id="nt-acts"></div>
+    <div class="slbl">保罗书信 Paul's Letters</div><div class="bgrid" id="nt-paul"></div>
+    <div class="slbl">普通书信 General Letters</div><div class="bgrid" id="nt-gen"></div>
+    <div class="slbl">启示录 Revelation</div><div class="bgrid" id="nt-rev"></div>
+  </div>
+
+  <div class="cpanel" id="cpanel">
+    <h3 id="cp-title"></h3><p id="cp-sub"></p>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+</div>
+
+<div id="pbar">
+  <div class="dragbar" id="dragbar"></div>
+  <div class="pinner">
+    <div class="ptop">
+      <div><div class="ptitle" id="ptitle">—</div><div class="psub">闽南语圣经 · Hokkien Bible</div></div>
+      <button class="xbtn" onclick="closeP()">✕</button>
+    </div>
+    <audio id="aplayer" controls></audio>
+    <div class="anote" id="anote">选择章节后自动播放</div>
+  </div>
+</div>
+
+<script>
+// [简体名, 繁体文件前缀, 章数, Bible API ID]
+const B={
+  'ot-law':[['创世记','01_創世記',50,'GEN'],['出埃及记','02_出埃及記',40,'EXO'],['利未记','03_利未記',27,'LEV'],['民数记','04_民數記',36,'NUM'],['申命记','05_申命記',34,'DEU']],
+  'ot-hist':[['约书亚记','06_約書亞記',24,'JOS'],['士师记','07_士師記',21,'JDG'],['路得记','08_路得記',4,'RUT'],['撒母耳记上','09_撒母耳記上',31,'1SA'],['撒母耳记下','10_撒母耳記下',24,'2SA'],['列王纪上','11_列王紀上',22,'1KI'],['列王纪下','12_列王紀下',25,'2KI'],['历代志上','13_歷代志上',29,'1CH'],['历代志下','14_歷代志下',36,'2CH'],['以斯拉记','15_以斯拉記',10,'EZR'],['尼希米记','16_尼希米記',13,'NEH'],['以斯帖记','17_以斯帖記',10,'EST']],
+  'ot-poet':[['约伯记','18_約伯記',42,'JOB'],['诗篇','19_詩篇',150,'PSA'],['箴言','20_箴言',31,'PRO'],['传道书','21_傳道書',12,'ECC'],['雅歌','22_雅歌',8,'SNG']],
+  'ot-prop':[['以赛亚书','23_以賽亞書',66,'ISA'],['耶利米书','24_耶利米書',52,'JER'],['耶利米哀歌','25_耶利米哀歌',5,'LAM'],['以西结书','26_以西結書',48,'EZK'],['但以理书','27_但以理書',12,'DAN'],['何西阿书','28_何西阿書',14,'HOS'],['约珥书','29_約珥書',3,'JOL'],['阿摩司书','30_阿摩司書',9,'AMO'],['俄巴底亚书','31_俄巴底亞書',1,'OBA'],['约拿书','32_約拿書',4,'JON'],['弥迦书','33_彌迦書',7,'MIC'],['那鸿书','34_那鴻書',3,'NAM'],['哈巴谷书','35_哈巴谷書',3,'HAB'],['西番雅书','36_西番雅書',3,'ZEP'],['哈该书','37_哈該書',2,'HAG'],['撒迦利亚书','38_撒迦利亞書',14,'ZEC'],['玛拉基书','39_瑪拉基書',4,'MAL']],
+  'nt-gosp':[['马太福音','40_馬太福音',28,'MAT'],['马可福音','41_馬可福音',16,'MRK'],['路加福音','42_路加福音',24,'LUK'],['约翰福音','43_約翰福音',21,'JHN']],
+  'nt-acts':[['使徒行传','44_使徒行傳',28,'ACT']],
+  'nt-paul':[['罗马书','45_羅馬書',16,'ROM'],['哥林多前书','46_哥林多前書',16,'1CO'],['哥林多后书','47_哥林多後書',13,'2CO'],['加拉太书','48_加拉太書',6,'GAL'],['以弗所书','49_以弗所書',6,'EPH'],['腓立比书','50_腓立比書',4,'PHP'],['歌罗西书','51_歌羅西書',4,'COL'],['帖撒罗尼迦前书','52_帖撒羅尼迦前書',5,'1TH'],['帖撒罗尼迦后书','53_帖撒羅尼迦後書',3,'2TH'],['提摩太前书','54_提摩太前書',6,'1TI'],['提摩太后书','55_提摩太後書',4,'2TI'],['提多书','56_提多書',3,'TIT'],['腓利门书','57_腓利門書',1,'PHM']],
+  'nt-gen':[['希伯来书','58_希伯來書',13,'HEB'],['雅各书','59_雅各書',5,'JAS'],['彼得前书','60_彼得前書',5,'1PE'],['彼得后书','61_彼得後書',3,'2PE'],['约翰一书','62_約翰一書',5,'1JN'],['约翰二书','63_約翰二書',1,'2JN'],['约翰三书','64_約翰三書',1,'3JN'],['犹大书','65_猶大書',1,'JUD']],
+  'nt-rev':[['启示录','66_啟示錄',22,'REV']]
+};
+
+Object.entries(B).forEach(([gid,list])=>{
+  const g=document.getElementById(gid);if(!g)return;
+  list.forEach(([name,prefix,chs,api])=>{
+    const b=document.createElement('button');
+    b.className='bbtn';b.textContent=name;
+    b.onclick=()=>selBook(name,prefix,chs,api,b);
+    g.appendChild(b);
+  });
+});
+
+function showT(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(t==='ot'&&i===0)||(t==='nt'&&i===1)));
+  document.getElementById('ot-sec').classList.toggle('active',t==='ot');
+  document.getElementById('nt-sec').classList.toggle('active',t==='nt');
+  document.getElementById('cpanel').classList.remove('visible');
+  document.querySelectorAll('.bbtn').forEach(b=>b.classList.remove('sel'));
+}
+
+function selBook(name,prefix,chs,api,btn){
+  document.querySelectorAll('.bbtn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('cp-title').textContent=name;
+  document.getElementById('cp-sub').textContent=`共 ${chs} 章`;
+  const panel=document.getElementById('cpanel');
+  panel.classList.add('visible');
+  const grid=document.getElementById('cgrid');
+  grid.innerHTML='';
+  for(let i=1;i<=chs;i++){
+    const b2=document.createElement('button');
+    b2.className='cbtn';b2.textContent=i;
+    b2.onclick=()=>selChapter(name,prefix,i,api,b2);
+    grid.appendChild(b2);
+  }
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function selChapter(name,prefix,ch,api,btn){
+  document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('playing'));
+  btn.classList.add('playing');
+
+  document.getElementById('ptitle').textContent=`${name} 第${ch}章`;
+  document.getElementById('pbar').classList.add('visible');
+  document.getElementById('anote').textContent='正在加载音频…';
+
+  // Fetch audio URL from our secure backend
+  const chPad=String(ch).padStart(3,'0');
+  const searchPrefix=`${prefix}_${chPad}`;
+  try{
+    const r=await fetch(`/api/hokkien-audio?prefix=${encodeURIComponent(searchPrefix)}`);
+    const data=await r.json();
+    const audio=document.getElementById('aplayer');
+    if(data.url){
+      audio.src=data.url;
+      audio.load();
+      audio.play().catch(()=>{});
+      document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
+    } else {
+      audio.src='';
+      document.getElementById('anote').textContent='此章节暂无音频';
+    }
+  }catch{
+    document.getElementById('anote').textContent='音频加载失败，请重试';
+  }
+
+  // Load scripture
+  document.getElementById('sc-title').textContent=`${name} 第${ch}章`;
+  document.getElementById('sc-panel').classList.add('visible');
+  document.getElementById('sc-body').innerHTML='<div class="info-msg">正在加载经文…</div>';
+  window.scrollTo({top:0,behavior:'smooth'});
+  loadScripture(api,ch);
+}
+
+async function loadScripture(api,ch){
+  const body=document.getElementById('sc-body');
+  try{
+    const res=await fetch(`https://bible-api.com/${api}+${ch}?translation=cuv`);
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    if(!data.verses||!data.verses.length)throw new Error();
+    body.innerHTML='';
+    data.verses.forEach(v=>{
+      const d=document.createElement('div');
+      d.className='verse';
+      d.innerHTML=`<span class="vnum">${v.verse}</span><span class="vtxt">${v.text.trim()}</span>`;
+      body.appendChild(d);
+    });
+  }catch{
+    body.innerHTML='<div class="info-msg">经文暂时无法加载，请检查网络后重试</div>';
+  }
+}
+
+function closeP(){
+  const a=document.getElementById('aplayer');
+  a.pause();a.src='';
+  document.getElementById('pbar').classList.remove('visible');
+  document.getElementById('sc-panel').classList.remove('visible');
+  document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('playing'));
+}
+
+// Drag to resize player
+const bar=document.getElementById('pbar');
+const handle=document.getElementById('dragbar');
+let drag=false,startY=0,startH=0;
+handle.addEventListener('mousedown',e=>{drag=true;startY=e.clientY;startH=bar.offsetHeight;document.body.style.userSelect='none';});
+handle.addEventListener('touchstart',e=>{drag=true;startY=e.touches[0].clientY;startH=bar.offsetHeight;},{passive:true});
+document.addEventListener('mousemove',e=>{if(!drag)return;const h=Math.min(Math.max(startH+(startY-e.clientY),95),window.innerHeight*.75);bar.style.height=h+'px';});
+document.addEventListener('touchmove',e=>{if(!drag)return;const h=Math.min(Math.max(startH+(startY-e.touches[0].clientY),95),window.innerHeight*.75);bar.style.height=h+'px';},{passive:true});
+document.addEventListener('mouseup',()=>{drag=false;document.body.style.userSelect='';});
+document.addEventListener('touchend',()=>{drag=false;});
+</script>
+</body>
+</html>
