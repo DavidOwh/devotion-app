@@ -68,7 +68,7 @@
   .play-btn:active{transform:scale(.95);}
   .ctrl-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:26px;padding:18px 22px;cursor:pointer;}
 
-  #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.98);border-top:2px solid rgba(201,168,76,.4);z-index:100;min-height:280px;max-height:70vh;overflow:hidden;}
+  #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.98);border-top:2px solid rgba(201,168,76,.4);z-index:300;min-height:280px;max-height:70vh;overflow:hidden;}
   #pbar.visible{display:block;}
   .dragbar{width:100%;height:36px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.04);border-bottom:1px solid rgba(201,168,76,.1);touch-action:none;user-select:none;}
   .dragbar::before{content:'';width:60px;height:6px;background:rgba(201,168,76,.5);border-radius:3px;}
@@ -111,7 +111,14 @@
   <div id="sc-panel">
     <div class="sc-hdr">
       <div><h2 id="sc-title">—</h2><span>和合本 · Chinese Union Version</span></div>
-      <button class="sc-back" onclick="closeScripture()">← 返回</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(201,168,76,.1);padding:8px 14px;border-radius:10px;border:1px solid rgba(201,168,76,.2);">
+          <button onclick="changeFontSize(-4)" style="background:none;border:none;color:var(--gold-light);font-size:30px;cursor:pointer;padding:0 6px;line-height:1;">A-</button>
+          <span id="font-size-label" style="color:var(--gold-light);font-size:22px;min-width:48px;text-align:center;">45px</span>
+          <button onclick="changeFontSize(4)" style="background:none;border:none;color:var(--gold-light);font-size:30px;cursor:pointer;padding:0 6px;line-height:1;">A+</button>
+        </div>
+        <button class="sc-back" onclick="closeScripture()">← 返回</button>
+      </div>
     </div>
     <div class="sc-body" id="sc-body"><div class="info-msg">请选择书卷和章节开始阅读</div></div>
   </div>
@@ -299,6 +306,13 @@ document.getElementById('aplayer').addEventListener('timeupdate',updateProgress)
 document.getElementById('aplayer').addEventListener('ended',()=>{document.getElementById('play-btn').textContent='▶';});
 document.getElementById('aplayer').addEventListener('play',()=>{document.getElementById('play-btn').textContent='⏸';});
 document.getElementById('aplayer').addEventListener('pause',()=>{document.getElementById('play-btn').textContent='▶';});
+
+let currentFontSize = 45;
+function changeFontSize(delta){
+  currentFontSize = Math.min(80, Math.max(20, currentFontSize + delta));
+  document.querySelectorAll('.vtxt').forEach(el => el.style.fontSize = currentFontSize + 'px');
+  document.getElementById('font-size-label').textContent = currentFontSize + 'px';
+}
 
 function closeScripture(){
   document.getElementById('sc-panel').classList.remove('visible');
