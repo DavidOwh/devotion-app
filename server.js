@@ -50,7 +50,24 @@ app.post("/api/verse", async (req, res) => {
   }
 });
 
-// ── NEW: CLOUDINARY AUDIO URL API ──
+// ── DEBUG: List Cloudinary files ──
+app.get("/api/debug-cloudinary", async (req, res) => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dzttgwgl6';
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const encoded = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+  try {
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/resources/video?max_results=5`, {
+      headers: { 'Authorization': `Basic ${encoded}` }
+    });
+    const data = await r.json();
+    res.json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+
 // Searches Cloudinary for Hokkien Bible MP3 files securely from server side
 app.get("/api/hokkien-audio", async (req, res) => {
   const { prefix } = req.query;
