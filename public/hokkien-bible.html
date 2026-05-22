@@ -301,6 +301,8 @@ document.getElementById('aplayer').addEventListener('timeupdate',updateProgress)
 document.getElementById('aplayer').addEventListener('ended',()=>{document.getElementById('play-btn').textContent='▶';});
 document.getElementById('aplayer').addEventListener('play',()=>{document.getElementById('play-btn').textContent='⏸';});
 document.getElementById('aplayer').addEventListener('pause',()=>{document.getElementById('play-btn').textContent='▶';});
+
+function closeP(){
   const a=document.getElementById('aplayer');
   a.pause();a.src='';
   document.getElementById('pbar').classList.remove('visible');
