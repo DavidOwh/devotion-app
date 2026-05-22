@@ -219,15 +219,17 @@ async function selChapter(name,prefix,ch,api,btn){
 async function loadScripture(api,ch){
   const body=document.getElementById('sc-body');
   try{
-    const res=await fetch(`https://bible-api.com/${api}+${ch}?translation=cuv`);
+    // Use bolls.life for simplified Chinese (CUVS = Simplified Chinese Union Version)
+    const res=await fetch(`https://bolls.life/get-text/CUVS/${api}/${ch}/`);
     if(!res.ok)throw new Error();
     const data=await res.json();
-    if(!data.verses||!data.verses.length)throw new Error();
+    if(!data||!data.length)throw new Error();
     body.innerHTML='';
-    data.verses.forEach(v=>{
+    data.forEach(v=>{
       const d=document.createElement('div');
       d.className='verse';
-      d.innerHTML=`<span class="vnum">${v.verse}</span><span class="vtxt">${v.text.trim()}</span>`;
+      const text=v.text.replace(/<[^>]*>/g,'').trim();
+      d.innerHTML=`<span class="vnum">${v.verse}</span><span class="vtxt">${text}</span>`;
       body.appendChild(d);
     });
   }catch{
