@@ -34,9 +34,9 @@
   .sc-body::-webkit-scrollbar{width:4px;}
   .sc-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:2px;}
   .verse{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
-  .vnum{font-size:26px;color:var(--gold);opacity:.7;min-width:40px;padding-top:4px;font-weight:600;flex-shrink:0;}
-  .vtxt{font-family:'Noto Serif SC',serif;font-size:30px;color:var(--cream);line-height:2.2;}
-  .info-msg{text-align:center;padding:28px;color:var(--text-light);font-size:24px;line-height:2;}
+  .vnum{font-size:28px;color:var(--gold);opacity:.8;min-width:44px;padding-top:4px;font-weight:600;flex-shrink:0;}
+  .vtxt{font-family:'Noto Serif SC',serif;font-size:32px;color:var(--cream);line-height:2.2;}
+  .info-msg{text-align:center;padding:28px;color:var(--text-light);font-size:26px;line-height:2;}
 
   .tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(255,255,255,.03);border-radius:12px;padding:4px;border:1px solid rgba(201,168,76,.15);}
   .tab{flex:1;padding:16px;background:none;border:none;color:var(--text-light);font-family:'Noto Serif SC',serif;font-size:45px;cursor:pointer;border-radius:8px;transition:all .3s;letter-spacing:1px;}
@@ -65,9 +65,9 @@
   .progress-bar{position:absolute;top:50%;transform:translateY(-50%);height:8px;background:var(--gold);border-radius:4px;width:0%;transition:width .3s;}
   .time-row{display:flex;justify-content:space-between;font-size:22px;color:var(--text-light);margin-bottom:16px;}
   .ctrl-row{display:flex;align-items:center;justify-content:center;gap:20px;}
-  .play-btn{width:90px;height:90px;border-radius:50%;background:var(--gold);border:none;color:#1a1208;font-size:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+  .play-btn{width:110px;height:110px;border-radius:50%;background:var(--gold);border:none;color:#1a1208;font-size:50px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
   .play-btn:active{transform:scale(.95);}
-  .ctrl-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:24px;padding:14px 20px;cursor:pointer;}
+  .ctrl-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:26px;padding:18px 22px;cursor:pointer;}
 
   #pbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,8,2,.98);border-top:2px solid rgba(201,168,76,.4);z-index:100;min-height:280px;max-height:70vh;overflow:hidden;}
   #pbar.visible{display:block;}
@@ -235,8 +235,8 @@ async function selChapter(name,prefix,ch,api,btn){
   const audio=document.getElementById('aplayer');
   audio.src=audioUrl;
   audio.load();
-  audio.play().then(()=>{document.getElementById('play-btn').textContent='⏸';}).catch(()=>{});
-  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
+  document.getElementById('play-btn').textContent='▶';
+  document.getElementById('anote').textContent='闽南语朗读 · 点击▶播放';
 
   // Load scripture
   document.getElementById('sc-title').textContent=`${name} 第${ch}章`;
