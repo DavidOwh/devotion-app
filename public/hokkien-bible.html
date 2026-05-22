@@ -187,16 +187,17 @@ async function selChapter(name,prefix,ch,api,btn){
   document.getElementById('ptitle').textContent=`${name} 第${ch}章`;
   document.getElementById('pbar').classList.add('visible');
 
-  // Build Cloudinary URL directly
+  // Build Cloudinary URL directly - this format works
   const chPad=String(ch).padStart(3,'0');
   const filePrefix=`${prefix}_${chPad}`;
   const audioUrl=`https://res.cloudinary.com/dzttgwgl6/video/upload/${encodeURIComponent(filePrefix)}.mp3`;
 
+  console.log('Audio URL:', audioUrl);
+
   const audio=document.getElementById('aplayer');
   audio.src=audioUrl;
   audio.load();
-  audio.play().catch(()=>{});
-  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
+  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio · 点击播放';
 
   // Load scripture
   document.getElementById('sc-title').textContent=`${name} 第${ch}章`;
