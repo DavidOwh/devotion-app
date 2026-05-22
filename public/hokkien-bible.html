@@ -186,27 +186,17 @@ async function selChapter(name,prefix,ch,api,btn){
 
   document.getElementById('ptitle').textContent=`${name} 第${ch}章`;
   document.getElementById('pbar').classList.add('visible');
-  document.getElementById('anote').textContent='正在加载音频…';
 
-  // Fetch audio URL from our secure backend
+  // Build Cloudinary URL directly
   const chPad=String(ch).padStart(3,'0');
-  const searchPrefix=`${prefix}_${chPad}`;
-  try{
-    const r=await fetch(`/api/hokkien-audio?prefix=${encodeURIComponent(searchPrefix)}`);
-    const data=await r.json();
-    const audio=document.getElementById('aplayer');
-    if(data.url){
-      audio.src=data.url;
-      audio.load();
-      audio.play().catch(()=>{});
-      document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
-    } else {
-      audio.src='';
-      document.getElementById('anote').textContent='此章节暂无音频';
-    }
-  }catch{
-    document.getElementById('anote').textContent='音频加载失败，请重试';
-  }
+  const filePrefix=`${prefix}_${chPad}`;
+  const audioUrl=`https://res.cloudinary.com/dzttgwgl6/video/upload/${encodeURIComponent(filePrefix)}.mp3`;
+
+  const audio=document.getElementById('aplayer');
+  audio.src=audioUrl;
+  audio.load();
+  audio.play().catch(()=>{});
+  document.getElementById('anote').textContent='闽南语朗读 · Hokkien Audio';
 
   // Load scripture
   document.getElementById('sc-title').textContent=`${name} 第${ch}章`;
