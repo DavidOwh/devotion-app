@@ -102,7 +102,7 @@ textarea::placeholder{color:#ccc}
           <button class="fbtn" id="zh-fbtn" onclick="findVerse('zh')">查找</button>
         </div>
         <div id="zh-va"></div>
-        <div class="hint">支持全本圣经 · 和合本简体 · 首次使用请运行 generate_bible.py</div>
+        <div class="hint">支持全本圣经 · 和合本简体 · 例：诗 23:1 / 约 3:16</div>
       </div>
       <div class="card"><div class="qtitle"><span class="qnum">1</span>经文在说什么？</div><div class="qsub">用简单的话总结经文内容</div><textarea id="zh-q1" rows="3" placeholder="这段经文在讲..." oninput="bp('zh')"></textarea></div>
       <div class="card"><div class="qtitle"><span class="qnum">2</span>经文对我说什么？</div><div class="qsub">这句话提醒我什么？安慰我什么？</div><textarea id="zh-q2" rows="3" placeholder="这段话让我想到..." oninput="bp('zh')"></textarea></div>
@@ -259,18 +259,25 @@ function parseEnRef(raw){
   return null;
 }
 async function fetchBibleVerse(bookNum,chapter,start,end,translation){
-  const bible=translation==='cus'?window.BIBLE_CUS:window.BIBLE_KJV;
-  const missing=translation==='cus'?window.CUS_MISSING:window.KJV_MISSING;
-  if(!bible||missing){
-    throw new Error(translation==='cus'
-      ?'请先运行 python generate_bible.py 下载圣经数据'
-      :'Please run python generate_bible.py to download Bible data');
-  }
-  const chData=bible[String(bookNum)]&&bible[String(bookNum)][String(chapter)];
-  if(!chData)throw new Error(translation==='cus'?'找不到该章节':'Chapter not found');
-  let text='';
-  for(let v=start;v<=end;v++){const t=chData[String(v)];if(t)text+=(text?'\n':'')+v+' '+t;}
-  if(!text)throw new Error(translation==='cus'?'找不到该节':'Verses not found');
+  // Build reference string from book number
+  const ZH_NAMES={1:'创',2:'出',3:'利',4:'民',5:'申',6:'书',7:'士',8:'得',9:'撒上',10:'撒下',
+    11:'王上',12:'王下',13:'代上',14:'代下',15:'拉',16:'尼',17:'斯',18:'伯',19:'诗',20:'箴',
+    21:'传',22:'歌',23:'赛',24:'耶',25:'哀',26:'结',27:'但',28:'何',29:'珥',30:'摩',
+    31:'俄',32:'拿',33:'弥',34:'鸿',35:'哈',36:'番',37:'该',38:'亚',39:'玛',
+    40:'太',41:'可',42:'路',43:'约',44:'徒',45:'罗',46:'林前',47:'林后',48:'加',49:'弗',
+    50:'腓',51:'西',52:'帖前',53:'帖后',54:'提前',55:'提后',56:'多',57:'门',58:'来',59:'雅',
+    60:'彼前',61:'彼后',62:'约一',63:'约二',64:'约三',65:'犹',66:'启'};
+  const bookName = ZH_NAMES[bookNum] || String(bookNum);
+  const ref = bookName + chapter + ':' + start + (end > start ? '-' + end : '');
+  const r = await fetch('https://devotion-app.onrender.com/api/verse', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({reference: ref})
+  });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error);
+  const text = translation === 'cus' ? (d.zh || '') : (d.en || '');
+  if(!text) throw new Error(translation==='cus'?'找不到该节':'Verses not found');
   return text;
 }
 
@@ -553,29 +560,29 @@ document.addEventListener('keydown',e=>{
 <style>
 #daily-back-btn{
   position:fixed;
-  top:12px;
-  left:12px;
+  top:10px;
+  left:10px;
   z-index:99999;
-  background:#123c5c;
+  background:rgba(18,60,92,0.88);
   color:white;
   border:none;
   border-radius:999px;
-  padding:10px 18px;
-  font-size:16px;
-  font-weight:900;
-  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  padding:7px 14px;
+  font-size:13px;
+  font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
   cursor:pointer;
   white-space:nowrap;
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   display:flex;
   align-items:center;
-  gap:6px;
-  opacity:0.92;
+  gap:5px;
+  opacity:0.90;
 }
-#daily-back-btn:active{opacity:.75}
+#daily-back-btn:active{opacity:.70}
 </style>
 <button id="daily-back-btn" onclick="window.location.href='https://daily.davidowh.com'">
-  🏠 返回每日与主同行
+  🏠 返回
 </button>
 
 </body>
