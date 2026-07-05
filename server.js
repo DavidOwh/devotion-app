@@ -106,6 +106,28 @@ app.get("/api/scripture", async (req, res) => {
   }
 });
 
+// ── TODAY'S BIBLE VERSE (for Make.com 华语灵修 automation) ──
+// Usage: /api/todaysverse?date=2026-07-06  → returns plain text bible_text for that date
+app.get("/api/todaysverse", async (req, res) => {
+  const { date } = req.query;
+  if (!date) return res.status(400).type("text/plain").send("date parameter required (format: YYYY-MM-DD)");
+  const m = String(date).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return res.status(400).type("text/plain").send("invalid date format, expected YYYY-MM-DD");
+  const key = `${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
+  try {
+    const r = await fetch("https://qinjinshen.davidowh.com/bible-verses.json");
+    if (!r.ok) throw new Error("failed to fetch bible-verses.json");
+    const data = await r.json();
+    const entry = data[key];
+    if (!entry || !entry.bible_text) {
+      return res.status(404).type("text/plain").send("not found for date: " + date);
+    }
+    res.type("text/plain").send(entry.bible_text);
+  } catch (e) {
+    res.status(500).type("text/plain").send("error: " + e.message);
+  }
+});
+
 app.get("/hokkien-bible", (req, res) => { res.sendFile(path.join(__dirname, "public", "hokkien-bible.html")); });
 app.get("*", (req, res) => { res.sendFile(path.join(__dirname, "public", "index.html")); });
 app.listen(PORT, () => console.log(`✝️ 三点灵修分享 running on port ${PORT}`));
