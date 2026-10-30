@@ -116,7 +116,9 @@ app.get("/api/todaysverse", async (req, res) => {
   const key = `${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
   try {
     const fsp = await import("fs/promises");
-const data = JSON.parse(await fsp.readFile(path.join(__dirname, "bible-verses.json"), "utf8"));
+    let data;
+    try { data = JSON.parse(await fsp.readFile(path.join(__dirname, `bible-verses-${m[1]}.json`), "utf8")); }
+    catch (err) { data = JSON.parse(await fsp.readFile(path.join(__dirname, "bible-verses.json"), "utf8")); }
     const entry = data[key];
     if (!entry || !entry.bible_text) {
       return res.status(404).type("text/plain").send("not found for date: " + date);
