@@ -115,9 +115,8 @@ app.get("/api/todaysverse", async (req, res) => {
   if (!m) return res.status(400).type("text/plain").send("invalid date format, expected YYYY-MM-DD");
   const key = `${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
   try {
-    const r = await fetch("https://qinjinshen.davidowh.com/bible-verses.json");
-    if (!r.ok) throw new Error("failed to fetch bible-verses.json");
-    const data = await r.json();
+    const fsp = await import("fs/promises");
+const data = JSON.parse(await fsp.readFile(path.join(__dirname, "bible-verses.json"), "utf8"));
     const entry = data[key];
     if (!entry || !entry.bible_text) {
       return res.status(404).type("text/plain").send("not found for date: " + date);
